@@ -34,52 +34,31 @@
     .section-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--accent); margin-bottom: 4px; }
     .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 5px; margin-bottom: 28px; }
 
-    /* ── GRID ─────────────────────────────────── */
-    .scripts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .scripts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
 
-    /* ── CARD ─────────────────────────────────── */
     .script-card {
       background: var(--bg4); border: 1px solid var(--border); border-radius: 10px;
-      overflow: hidden; display: flex; flex-direction: column;
-      transition: transform .2s, border-color .2s, box-shadow .2s; position: relative;
+      overflow: hidden; transition: transform .2s, border-color .2s, box-shadow .2s;
     }
     .script-card:hover { transform: translateY(-4px); border-color: rgba(145,70,255,.45); box-shadow: 0 12px 40px rgba(145,70,255,.2); }
 
-    /* Картинка вгорі картки */
-    .script-card-img {
-      width: 100%; aspect-ratio: 16/7; object-fit: cover; display: block;
+    .script-card img {
+      width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block;
       background: var(--bg3);
     }
-    /* Заглушка якщо немає картинки */
-    .script-card-img-placeholder {
-      width: 100%; aspect-ratio: 16/7;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 48px; background: var(--bg3);
-      border-bottom: 1px solid var(--border);
+
+    .script-card-body {
+      padding: 14px 16px 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
     }
+    .script-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; color: var(--text); }
 
-    /* Бейдж категорії поверх картинки */
-    .script-card-overlay {
-      position: absolute; top: 10px; right: 10px;
-      background: rgba(145,70,255,.18); border: 1px solid rgba(145,70,255,.5);
-      border-radius: 2px; padding: 3px 10px;
-      font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--accent);
-      backdrop-filter: blur(6px);
-    }
-
-    /* Тіло картки */
-    .script-card-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
-    .script-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; color: var(--text); }
-    .script-desc { font-size: 13px; font-weight: 600; color: var(--muted); line-height: 1.6; flex: 1; }
-
-    .script-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; }
-    .script-filename { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .script-dl {
-      display: inline-flex; align-items: center; gap: 6px;
+      display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
       background: var(--accent); color: #fff;
       font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1px;
-      padding: 7px 16px; border-radius: 3px; text-decoration: none;
-      transition: opacity .2s, transform .15s; white-space: nowrap; flex-shrink: 0;
+      padding: 7px 14px; border-radius: 3px; text-decoration: none;
+      transition: opacity .2s, transform .15s;
       box-shadow: 0 0 14px rgba(145,70,255,.3);
     }
     .script-dl:hover { opacity: .85; transform: scale(1.04); }
@@ -112,69 +91,32 @@
 <footer>❤️ © 24.04.2026 <strong>sun69wukong</strong> ❤️</footer>
 
 <script>
-  // ══════════════════════════════════════════════════════════════════
-  //  ▼▼▼  ДОДАВАЙТЕ НОВІ СКРИПТИ СЮДИ  ▼▼▼
-  //
-  //  img     — пряме посилання на картинку (або залиш "" для емодзі)
-  //  icon    — емодзі-заглушка якщо img порожній
-  //  fileId  — ID файлу з Google Drive
-  //            (з посилання drive.google.com/file/d/XXXXXXX/view
-  //             беріть тільки XXXXXXX)
-  // ══════════════════════════════════════════════════════════════════
+  // ▼▼▼ ДОДАВАЙ СКРИПТИ ТУТ ▼▼▼
   const SCRIPTS = [
 
     {
-      name:        "Назва скрипта",
-      description: "Опис що робить цей скрипт — декілька речень про функціонал.",
-      category:    "OBS",
-      filename:    "script.lua",
-      img:         "",          // ← вставте пряме посилання на картинку, або залиш ""
-      icon:        "🎮",        // ← емодзі якщо img порожній
-      fileId:      "1wf-NMFqdUo-R9XrcH2DfueDzneVIft3k"
+      name: "UnfollowCheck",
+      img:  "https://media.discordapp.net/attachments/1272555800862396568/1496799918629720104/image.png?ex=69ebdbcd&is=69ea8a4d&hm=5ecb96040c9988f8158b04421338f18ead88987dbf0039f6674213d9cfbc7fcd&=&format=webp&quality=lossless",
+      url:  "https://drive.usercontent.google.com/download?id=1wf-NMFqdUo-R9XrcH2DfueDzneVIft3k&export=download&authuser=0&confirm=t&uuid=bb5dfe3e-8944-472a-8931-047d0dc19194&at=ALBwUgk5SiHDBStHhBUH95lax561:1777024339534"
     },
 
-    // Ще один приклад із картинкою:
+    // Ще один приклад:
     // {
-    //   name:        "Другий скрипт",
-    //   description: "Опис...",
-    //   category:    "TWITCH",
-    //   filename:    "twitch_alert.js",
-    //   img:         "https://ПРЯМЕ_ПОСИЛАННЯ_НА_ФОТО.jpg",
-    //   icon:        "📺",
-    //   fileId:      "XXXXXXXXXXXXXXXXX"
+    //   name: "Другий скрипт",
+    //   img:  "https://...",
+    //   url:  "https://drive.usercontent.google.com/download?id=XXXXXXX&export=download&confirm=t"
     // },
 
   ];
-  // ══════════════════════════════════════════════════════════════════
+  // ▲▲▲
 
-  function makeDriveDownloadUrl(fileId) {
-    return `https://drive.usercontent.google.com/download?id=${fileId}&export=download&confirm=t`;
-  }
-
-  const container = document.getElementById('scripts-container');
-
-  container.innerHTML = SCRIPTS.map(s => `
+  document.getElementById('scripts-container').innerHTML = SCRIPTS.map(s => `
     <div class="script-card">
-
-      ${s.img
-        ? `<img class="script-card-img" src="${s.img}" alt="${s.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-           <div class="script-card-img-placeholder" style="display:none">${s.icon || '📄'}</div>`
-        : `<div class="script-card-img-placeholder">${s.icon || '📄'}</div>`
-      }
-
-      <div class="script-card-overlay">${s.category || 'СКРИПТ'}</div>
-
+      <img src="${s.img}" alt="${s.name}">
       <div class="script-card-body">
-        <div class="script-title">${s.name}</div>
-        <div class="script-desc">${s.description}</div>
-        <div class="script-footer">
-          <span class="script-filename">📎 ${s.filename}</span>
-          <a class="script-dl" href="${makeDriveDownloadUrl(s.fileId)}" target="_blank">
-            ↓ ЗАВАНТАЖИТИ
-          </a>
-        </div>
+        <div class="script-name">${s.name}</div>
+        <a class="script-dl" href="${s.url}" target="_blank">↓ ЗАВАНТАЖИТИ</a>
       </div>
-
     </div>
   `).join('');
 </script>
