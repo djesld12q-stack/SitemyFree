@@ -39,6 +39,7 @@
     .script-card {
       background: var(--bg4); border: 1px solid var(--border); border-radius: 10px;
       overflow: hidden; transition: transform .2s, border-color .2s, box-shadow .2s;
+      display: flex; flex-direction: column;
     }
     .script-card:hover { transform: translateY(-4px); border-color: rgba(145,70,255,.45); box-shadow: 0 12px 40px rgba(145,70,255,.2); }
 
@@ -49,12 +50,28 @@
 
     .script-card-body {
       padding: 14px 16px 16px;
+      display: flex; flex-direction: column; gap: 10px; flex: 1;
+    }
+
+    .script-card-header {
       display: flex; align-items: center; justify-content: space-between; gap: 12px;
     }
+
     .script-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; color: var(--text); }
 
+    /* ── опис ── */
+    .script-desc {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 1.55;
+      color: var(--muted);
+      border-left: 2px solid rgba(145,70,255,.35);
+      padding-left: 10px;
+    }
+
     .script-dl {
-      display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
+      display: inline-flex; align-items: center; gap: 6px; align-self: flex-start;
       background: var(--accent); color: #fff;
       font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1px;
       padding: 7px 14px; border-radius: 3px; text-decoration: none;
@@ -96,13 +113,22 @@
 
     {
       name: "Відстеження про Unfollow",
+      desc: "Відстежує Відписки та сповіщає коли хтось відписався від тебе.",
       img:  "https://media.discordapp.net/attachments/1272555800862396568/1496799918629720104/image.png?ex=69ebdbcd&is=69ea8a4d&hm=5ecb96040c9988f8158b04421338f18ead88987dbf0039f6674213d9cfbc7fcd&=&format=webp&quality=lossless",
       url:  "https://drive.usercontent.google.com/download?id=1wf-NMFqdUo-R9XrcH2DfueDzneVIft3k&export=download&authuser=0&confirm=t&uuid=bb5dfe3e-8944-472a-8931-047d0dc19194&at=ALBwUgk5SiHDBStHhBUH95lax561:1777024339534"
     },
 
-    // Ще один приклад:
+    {
+      name: "TranslateJoin",
+      desc: "Автоматично перекладає повідомлення при підключенні до чату.",
+      img:  "https://futurenow.com.ua/wp-content/uploads/2020/04/bezkoshtovnyj-perekladach-onlajn.jpg",
+      url:  "https://drive.usercontent.google.com/download?id=1XqMbLJizgidnrT9vkhah6eZ8H-ii2HYg&export=download&authuser=0"
+    },
+
+    // Приклад з описом:
     // {
-    //   name: "Другий скрипт",
+    //   name: "Назва скрипта",
+    //   desc: "Тут пишеш що робить цей скрипт — коротко і зрозуміло.",
     //   img:  "https://...",
     //   url:  "https://drive.usercontent.google.com/download?id=XXXXXXX&export=download&confirm=t"
     // },
@@ -114,7 +140,10 @@
     <div class="script-card">
       <img src="${s.img}" alt="${s.name}">
       <div class="script-card-body">
-        <div class="script-name">${s.name}</div>
+        <div class="script-card-header">
+          <div class="script-name">${s.name}</div>
+        </div>
+        ${s.desc ? `<p class="script-desc">${s.desc}</p>` : ''}
         <a class="script-dl" href="${s.url}" target="_blank">↓ ЗАВАНТАЖИТИ</a>
       </div>
     </div>
