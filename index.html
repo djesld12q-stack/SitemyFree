@@ -8,65 +8,35 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --accent: #9146FF;
-      --accent2: #9146FF;
-      --red: #9146FF;
-      --gold: #9146FF;
-      --bg: #07070f;
-      --bg2: #0d0d1a;
-      --bg3: #121220;
-      --bg4: #181830;
-      --text: #eeeef8;
-      --muted: #6e6e90;
-      --border: rgba(145,70,255,.18);
+      --accent: #9146FF; --accent2: #9146FF; --red: #9146FF; --gold: #9146FF;
+      --bg: #07070f; --bg2: #0d0d1a; --bg3: #121220; --bg4: #181830;
+      --text: #eeeef8; --muted: #6e6e90; --border: rgba(145,70,255,.18);
     }
-
     html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Rajdhani', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
+    body { font-family: 'Rajdhani', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
     body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background-image:
-        linear-gradient(rgba(145,70,255,.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(145,70,255,.04) 1px, transparent 1px);
-      background-size: 44px 44px;
-      pointer-events: none; z-index: 0;
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(145,70,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(145,70,255,.04) 1px, transparent 1px);
+      background-size: 44px 44px; pointer-events: none; z-index: 0;
     }
-
-    /* NAV */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 40px; height: 56px;
-      background: rgba(7,7,15,.96);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(14px);
+      background: rgba(7,7,15,.96); border-bottom: 1px solid var(--border); backdrop-filter: blur(14px);
     }
-    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 4px; color: var(--accent); }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 4px; color: var(--accent); text-decoration: none; }
     .nav-logo span { color: var(--accent2); }
     .nav-links { display: flex; gap: 24px; }
-    .nav-links a { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color .2s; }
+    .nav-links a { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color .2s; padding-bottom: 2px; border-bottom: 2px solid transparent; }
     .nav-links a:hover { color: var(--text); }
+    .nav-links a.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-    /* HERO */
     .hero {
-      position: relative; z-index: 1;
-      min-height: 100vh;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
+      position: relative; z-index: 1; min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
       text-align: center; padding: 80px 24px 60px;
-      border-bottom: 1px solid rgba(145,70,255,.1);
-      overflow: hidden;
     }
     .hero-glow {
       position: absolute; width: 700px; height: 700px; border-radius: 50%;
@@ -78,8 +48,7 @@
     .hero-rings { position: absolute; inset: 0; pointer-events: none; }
     .hero-rings::before, .hero-rings::after {
       content: ''; position: absolute; border-radius: 50%;
-      border: 1px solid rgba(145,70,255,.08);
-      top: 50%; left: 50%; transform: translate(-50%,-50%);
+      border: 1px solid rgba(145,70,255,.08); top: 50%; left: 50%; transform: translate(-50%,-50%);
     }
     .hero-rings::before { width: 500px; height: 500px; animation: ring 8s linear infinite; }
     .hero-rings::after  { width: 800px; height: 800px; animation: ring 12s linear infinite reverse; }
@@ -96,32 +65,16 @@
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.1} }
 
     .hero-name {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(50px, 10vw, 108px);
-      letter-spacing: 6px; line-height: .9;
-      color: var(--text); margin-bottom: 16px;
-      position: relative; z-index: 1;
+      font-family: 'Bebas Neue', sans-serif; font-size: clamp(50px, 10vw, 108px);
+      letter-spacing: 6px; line-height: .9; color: var(--text); margin-bottom: 16px; position: relative; z-index: 1;
     }
     .hero-name .a1 { color: var(--accent); text-shadow: 0 0 40px rgba(145,70,255,.6); }
     .hero-name .a2 { color: var(--accent2); text-shadow: 0 0 30px rgba(0,245,255,.5); }
 
-    .hero-tags {
-      display: flex; gap: 10px; flex-wrap: wrap;
-      justify-content: center; margin-bottom: 28px;
-      position: relative; z-index: 1;
-    }
-    .tag {
-      font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px;
-      padding: 5px 14px; border-radius: 2px;
-      border: 1px solid var(--border); color: var(--muted);
-      background: rgba(145,70,255,.05);
-    }
+    .hero-tags { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 28px; position: relative; z-index: 1; }
+    .tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; padding: 5px 14px; border-radius: 2px; border: 1px solid var(--border); color: var(--muted); background: rgba(145,70,255,.05); }
 
-    .hero-desc {
-      max-width: 560px; font-size: 15px; font-weight: 600;
-      line-height: 1.65; color: var(--muted);
-      margin-bottom: 36px; position: relative; z-index: 1;
-    }
+    .hero-desc { max-width: 560px; font-size: 15px; font-weight: 600; line-height: 1.65; color: var(--muted); margin-bottom: 36px; position: relative; z-index: 1; }
     .hero-desc strong { color: var(--accent); font-weight: 700; }
 
     .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; position: relative; z-index: 1; }
@@ -131,8 +84,7 @@
       padding: 13px 34px; background: var(--accent); color: #fff;
       font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 3px;
       border: none; border-radius: 3px; cursor: pointer;
-      box-shadow: 0 0 30px rgba(145,70,255,.45);
-      transition: transform .2s, box-shadow .2s; text-decoration: none;
+      box-shadow: 0 0 30px rgba(145,70,255,.45); transition: transform .2s, box-shadow .2s; text-decoration: none;
     }
     .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 44px rgba(145,70,255,.6); }
 
@@ -141,94 +93,27 @@
       padding: 13px 34px; background: transparent;
       border: 1px solid rgba(255,215,0,.35); color: var(--gold);
       font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 3px;
-      border-radius: 3px; cursor: pointer;
-      transition: all .2s; text-decoration: none;
+      border-radius: 3px; cursor: pointer; transition: all .2s; text-decoration: none;
     }
     .btn-secondary:hover { background: rgba(255,215,0,.08); transform: translateY(-3px); }
 
-    /* SECTION */
-    .section { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; padding: 70px 24px 0; }
-    .section-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--accent); margin-bottom: 4px; }
-    .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 5px; margin-bottom: 28px; }
-
-    /* ABOUT */
-    .about-card {
-      background: var(--bg4); border: 1px solid var(--border);
-      border-radius: 12px; padding: 32px 36px;
-      display: flex; gap: 32px; align-items: flex-start;
-    }
-    @media(max-width:600px){ .about-card{ flex-direction:column; padding:24px; } }
-    .about-avatar {
-      width: 90px; height: 90px; flex-shrink: 0; border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent) 0%, #00bfff 100%);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: #fff;
-      border: 3px solid var(--accent); box-shadow: 0 0 24px rgba(145,70,255,.5);
-    }
-    .about-text { flex: 1; }
-    .about-name { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 3px; color: var(--accent); margin-bottom: 10px; }
-    .about-bio { font-size: 15px; font-weight: 600; line-height: 1.7; color: #b0b0cc; }
-    .about-bio strong { color: var(--accent2); }
-
-    /* STREAM */
-    .stream-card { background: var(--bg4); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-    .stream-hdr { display: flex; align-items: center; justify-content: space-between; padding: 14px 22px; background: var(--bg3); border-bottom: 1px solid rgba(145,70,255,.12); }
-    .stream-ch { display: flex; align-items: center; gap: 12px; }
-    .stream-av { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #5c2d91); display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: #fff; border: 2px solid var(--accent); box-shadow: 0 0 12px rgba(145,70,255,.4); }
-    .stream-info h4 { font-weight: 700; font-size: 15px; }
-    .stream-info span { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); }
-    .stream-live { display: flex; align-items: center; gap: 7px; }
-    .stream-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--red); box-shadow: 0 0 7px rgba(255,68,68,.8); animation: blink 1.5s step-end infinite; }
-    .stream-ltxt { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--red); letter-spacing: 1px; }
-    .stream-player { background: #040408; position: relative; width: 100%; aspect-ratio: 16/9; min-height: 240px; }
-    .stream-player iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
-    .stream-ftr { display: flex; align-items: center; justify-content: space-between; padding: 12px 22px; background: var(--bg3); border-top: 1px solid rgba(145,70,255,.12); }
-    .tw-link { display: flex; align-items: center; gap: 7px; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px; text-decoration: none; transition: opacity .2s; }
-    .tw-link:hover { opacity: .7; }
-
-    /* LINKS */
-    .links-section { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; padding: 70px 24px 100px; }
-    .links-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
-    @media(max-width:700px){ .links-grid{ grid-template-columns:1fr 1fr; } }
-    @media(max-width:440px){ .links-grid{ grid-template-columns:1fr; } }
-
-    .link-card {
-      display: flex; align-items: center; gap: 14px;
-      padding: 18px 20px; border-radius: 10px;
-      border: 1px solid rgba(145,70,255,.16);
-      background: var(--bg4); text-decoration: none;
-      transition: transform .18s, border-color .2s, box-shadow .2s;
-    }
-    .link-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 36px rgba(145,70,255,.22); }
-    .link-card.donate { border-color: rgba(255,215,0,.2); background: rgba(255,215,0,.03); }
-    .link-card.donate:hover { border-color: var(--gold); box-shadow: 0 10px 36px rgba(255,215,0,.18); }
-
-    .link-ico { width: 46px; height: 46px; border-radius: 10px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
-    .link-info { flex: 1; min-width: 0; }
-    .link-name { font-weight: 700; font-size: 14px; color: var(--text); }
-    .link-card.donate .link-name { color: var(--gold); }
-    .link-handle { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .link-arr { color: var(--muted); font-size: 16px; transition: color .18s, transform .18s; }
-    .link-card:hover .link-arr { color: var(--accent); transform: translateX(4px); }
-    .link-card.donate:hover .link-arr { color: var(--gold); }
-
-    /* FOOTER */
-    footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 28px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+    footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 28px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 60px; }
     footer strong { color: var(--accent); }
   </style>
 </head>
 <body>
 
 <nav>
-  <div class="nav-logo">sun<span>69</span>wukong</div>
+  <a href="index.html" class="nav-logo">sun<span>69</span>wukong</a>
   <div class="nav-links">
-    <a href="#about">Про мене</a>
-    <a href="#stream">Стрім</a>
-    <a href="#links">Посилання</a>
+    <a href="index.html" class="active">Головна</a>
+    <a href="about.html">Про мене</a>
+    <a href="stream.html">Стрім</a>
+    <a href="games.html">Ігри</a>
+    <a href="links.html">Посилання</a>
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-glow"></div>
   <div class="hero-rings"></div>
@@ -237,7 +122,7 @@
     <span class="a1">SUN</span><span class="a2">69</span>WUKONG
   </h1>
   <div class="hero-tags">
-    <span class="tag">🎮 ІГРИ 🎮 </span>
+    <span class="tag">🎮 ІГРИ 🎮</span>
     <span class="tag">🎬 ФІЛЬМИ 🎬</span>
     <span class="tag">🌸 АНІМЕ 🌸</span>
     <span class="tag">📺 МУЛЬТИКИ 📺</span>
@@ -256,137 +141,6 @@
   </div>
 </section>
 
-<!-- ABOUT -->
-<div class="section" id="about">
-  <p class="section-label">// про мене</p>
-  <h2 class="section-title">ХТО Я?</h2>
-  <div class="about-card">
-    <div class="about-avatar">S</div>
-    <div class="about-text">
-      <div class="about-name">sun69wukong</div>
-      <p class="about-bio">
-        Ласкаво просимо на канал <strong>sun69wukong</strong>! Тут ви знайдете все, що пов'язано з іграми, переглядом фільмів, аніме та мультиків. Я обожнюю грати в ігри та часто <strong>"горю"</strong> від них, але це лише додає веселощів! Я завжди радий поспілкуватися з вами на різні теми та поділитися своїми думками.
-      </p>
-    </div>
-  </div>
-</div>
-
-<!-- STREAM -->
-<div class="section" id="stream">
-  <p class="section-label">// трансляція</p>
-  <h2 class="section-title">ПРЯМИЙ ЕФІР</h2>
-  <div class="stream-card">
-    <div class="stream-hdr">
-      <div class="stream-ch">
-        <div class="stream-av">S</div>
-        <div class="stream-info">
-          <h4>sun69wukong</h4>
-          <span>twitch.tv/sun69wukong</span>
-        </div>
-      </div>
-      <div class="stream-live">
-        <div class="stream-dot"></div>
-        <span class="stream-ltxt">LIVE</span>
-      </div>
-    </div>
-    <div class="stream-player" id="stream-player-wrap"></div>
-    <script>
-      (function(){
-        var parent = window.location.hostname || 'sun69wukong.github.io';
-        var wrap = document.getElementById('stream-player-wrap');
-        var iframe = document.createElement('iframe');
-        iframe.src = 'https://player.twitch.tv/?channel=sun69wukong&parent=' + parent + '&autoplay=false';
-        iframe.allowFullscreen = true;
-        iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
-        wrap.style.position = 'relative';
-        wrap.appendChild(iframe);
-      })();
-    </script>
-    <div class="stream-ftr">
-      <a class="tw-link" href="https://www.twitch.tv/sun69wukong" target="_blank">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="#9146FF"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
-        Відкрити на Twitch
-      </a>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)">🎮 sun69wukong</span>
-    </div>
-  </div>
-</div>
-
-<!-- LINKS -->
-<div class="links-section" id="links">
-  <p class="section-label">// посилання</p>
-  <h2 class="section-title">МОЇ КАНАЛИ</h2>
-  <div class="links-grid">
-
-    <a href="https://www.twitch.tv/sun69wukong" target="_blank" class="link-card">
-      <div class="link-ico">🟣</div>
-      <div class="link-info">
-        <div class="link-name">Twitch</div>
-        <div class="link-handle">twitch.tv/sun69wukong</div>
-      </div>
-      <span class="link-arr">→</span>
-    </a>
-
-    <a href="https://steamcommunity.com/id/Angel_var/" target="_blank" class="link-card">
-      <div class="link-ico">🎮</div>
-      <div class="link-info">
-        <div class="link-name">Steam</div>
-        <div class="link-handle">TTV sun69wukong</div>
-      </div>
-      <span class="link-arr">→</span>
-    </a>
-
-    <a href="https://bsky.app/profile/sun69wukongttv.bsky.social" target="_blank" class="link-card">
-      <div class="link-ico">🦋</div>
-      <div class="link-info">
-        <div class="link-name">Bluesky</div>
-        <div class="link-handle">@sun69wukongttv</div>
-      </div>
-      <span class="link-arr">→</span>
-    </a>
-
-    <a href="https://streamrada.com/sun69wukong" target="_blank" class="link-card">
-      <div class="link-ico">📊</div>
-      <div class="link-info">
-        <div class="link-name">Stream Rada</div>
-        <div class="link-handle">Статистика стрімера</div>
-      </div>
-      <span class="link-arr">→</span>
-    </a>
-
-    <a href="https://www.facebook.com/profile.php?id=61584247929708" target="_blank" class="link-card">
-      <div class="link-ico">🔵</div>
-      <div class="link-info">
-        <div class="link-name">Facebook</div>
-        <div class="link-handle">sun69wukong</div>
-      </div>
-      <span class="link-arr">→</span>
-    </a>
-
-    <a href="https://donatello.to/sun69wukong" target="_blank" class="link-card donate">
-      <div class="link-ico">💛</div>
-      <div class="link-info">
-        <div class="link-name">Donatello</div>
-        <div class="link-handle">Донат стрімеру</div>
-      </div>
-      <span class="link-arr">→</span>
-    </a>
-
-    <a href="https://send.monobank.ua/jar/9Bqrs6GN1V" target="_blank" class="link-card donate">
-      <div class="link-ico">🫙</div>
-      <div class="link-info">
-        <div class="link-name">Monobank</div>
-        <div class="link-handle">Підтримати банкою</div>
-      </div>
-      <span class="link-arr">→</span>
-    </a>
-
-  </div>
-</div>
-
-<footer>
- ❤️ © 24.04.2026 <strong>sun69wukong</strong> ❤️
-</footer>
-
+<footer>❤️ © 24.04.2026 <strong>sun69wukong</strong> ❤️</footer>
 </body>
 </html>

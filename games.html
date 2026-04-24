@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ігри — sun69wukong</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #9146FF; --bg: #07070f; --bg4: #181830;
+      --text: #eeeef8; --muted: #6e6e90; --border: rgba(145,70,255,.18);
+    }
+    body { font-family: 'Rajdhani', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(145,70,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(145,70,255,.04) 1px, transparent 1px);
+      background-size: 44px 44px; pointer-events: none; z-index: 0;
+    }
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 56px;
+      background: rgba(7,7,15,.96); border-bottom: 1px solid var(--border); backdrop-filter: blur(14px);
+    }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 4px; color: var(--accent); text-decoration: none; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color .2s; padding-bottom: 2px; border-bottom: 2px solid transparent; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .page { position: relative; z-index: 1; max-width: 920px; margin: 0 auto; padding: 100px 24px 60px; }
+    .section-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--accent); margin-bottom: 4px; }
+    .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 5px; margin-bottom: 28px; }
+
+    .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+    .game-card {
+      background: var(--bg4); border: 1px solid var(--border); border-radius: 10px;
+      overflow: hidden; transition: transform .2s, border-color .2s, box-shadow .2s; position: relative;
+    }
+    .game-card:hover { transform: translateY(-4px); border-color: rgba(145,70,255,.45); box-shadow: 0 12px 40px rgba(145,70,255,.2); }
+    .game-card img { width: 100%; aspect-ratio: 460/215; object-fit: cover; display: block; }
+    .game-card-body { padding: 14px 16px 16px; }
+    .game-card-title { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; color: var(--text); margin-bottom: 6px; }
+    .game-card-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .game-badge { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; padding: 3px 10px; border-radius: 2px; }
+    .game-badge.done { background: rgba(0,200,100,.1); border: 1px solid rgba(0,200,100,.35); color: #00c864; }
+    .game-badge.playing { background: rgba(145,70,255,.1); border: 1px solid rgba(145,70,255,.35); color: var(--accent); }
+    .game-platform { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 1px; color: var(--muted); margin-left: auto; }
+    .game-card-overlay {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(0,200,100,.15); border: 1px solid rgba(0,200,100,.4);
+      border-radius: 2px; padding: 3px 8px;
+      font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; color: #00c864;
+    }
+    .game-card-overlay.playing-overlay { background: rgba(145,70,255,.15); border-color: rgba(145,70,255,.4); color: var(--accent); }
+
+    footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 28px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 60px; }
+    footer strong { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">sun<span>69</span>wukong</a>
+  <div class="nav-links">
+    <a href="index.html">Головна</a>
+    <a href="about.html">Про мене</a>
+    <a href="stream.html">Стрім</a>
+    <a href="games.html" class="active">Ігри</a>
+    <a href="links.html">Посилання</a>
+  </div>
+</nav>
+
+<div class="page">
+  <p class="section-label">// steam</p>
+  <h1 class="section-title">МОЇ ІГРИ</h1>
+  <div class="games-grid">
+
+    <div class="game-card">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2322010/header.jpg?t=1776465233" alt="God of War Ragnarök">
+      <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
+      <div class="game-card-body">
+        <div class="game-card-title">God of War Ragnarök</div>
+        <div class="game-card-meta">
+          <span class="game-badge done">✓ ПРОЙДЕНО</span>
+          <span class="game-platform">🎮 STEAM</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ШАБЛОН: ПРОЙДЕНО
+    <div class="game-card">
+      <img src="ПОСИЛАННЯ_НА_КАРТИНКУ" alt="НАЗВА">
+      <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
+      <div class="game-card-body">
+        <div class="game-card-title">НАЗВА ГРИ</div>
+        <div class="game-card-meta">
+          <span class="game-badge done">✓ ПРОЙДЕНО</span>
+          <span class="game-platform">🎮 STEAM</span>
+        </div>
+      </div>
+    </div>
+    -->
+
+    <!-- ШАБЛОН: ГРАЮ ЗАРАЗ
+    <div class="game-card">
+      <img src="ПОСИЛАННЯ_НА_КАРТИНКУ" alt="НАЗВА">
+      <div class="game-card-overlay playing-overlay">▶ ГРАЮ</div>
+      <div class="game-card-body">
+        <div class="game-card-title">НАЗВА ГРИ</div>
+        <div class="game-card-meta">
+          <span class="game-badge playing">▶ ГРАЮ</span>
+          <span class="game-platform">🎮 STEAM</span>
+        </div>
+      </div>
+    </div>
+    -->
+
+  </div>
+</div>
+
+<footer>❤️ © 24.04.2026 <strong>sun69wukong</strong> ❤️</footer>
+</body>
+</html>

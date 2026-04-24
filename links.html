@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Посилання — sun69wukong</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #9146FF; --gold: #9146FF; --bg: #07070f; --bg4: #181830;
+      --text: #eeeef8; --muted: #6e6e90; --border: rgba(145,70,255,.18);
+    }
+    body { font-family: 'Rajdhani', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(145,70,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(145,70,255,.04) 1px, transparent 1px);
+      background-size: 44px 44px; pointer-events: none; z-index: 0;
+    }
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 56px;
+      background: rgba(7,7,15,.96); border-bottom: 1px solid var(--border); backdrop-filter: blur(14px);
+    }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 4px; color: var(--accent); text-decoration: none; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color .2s; padding-bottom: 2px; border-bottom: 2px solid transparent; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .page { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; padding: 100px 24px 60px; }
+    .section-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--accent); margin-bottom: 4px; }
+    .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 5px; margin-bottom: 28px; }
+
+    .links-list { display: flex; flex-direction: column; gap: 12px; }
+    .link-card {
+      display: flex; align-items: center; gap: 16px;
+      background: var(--bg4); border: 1px solid var(--border); border-radius: 10px;
+      padding: 16px 20px; text-decoration: none; color: var(--text);
+      transition: border-color .2s, transform .15s, box-shadow .2s;
+    }
+    .link-card:hover { border-color: rgba(145,70,255,.45); transform: translateX(4px); box-shadow: 0 4px 24px rgba(145,70,255,.15); }
+    .link-card.donate:hover { border-color: rgba(255,215,0,.35); box-shadow: 0 4px 24px rgba(255,215,0,.1); }
+    .link-ico { font-size: 28px; width: 44px; text-align: center; flex-shrink: 0; }
+    .link-info { flex: 1; }
+    .link-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; }
+    .link-handle { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-top: 2px; }
+    .link-arr { color: var(--muted); font-size: 18px; transition: color .18s, transform .18s; }
+    .link-card:hover .link-arr { color: var(--accent); transform: translateX(4px); }
+    .link-card.donate:hover .link-arr { color: var(--gold); }
+
+    footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 28px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 60px; }
+    footer strong { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">sun<span>69</span>wukong</a>
+  <div class="nav-links">
+    <a href="index.html">Головна</a>
+    <a href="about.html">Про мене</a>
+    <a href="stream.html">Стрім</a>
+    <a href="games.html">Ігри</a>
+    <a href="links.html" class="active">Посилання</a>
+  </div>
+</nav>
+
+<div class="page">
+  <p class="section-label">// посилання</p>
+  <h1 class="section-title">МОЇ КАНАЛИ</h1>
+  <div class="links-list">
+
+    <a href="https://www.twitch.tv/sun69wukong" target="_blank" class="link-card">
+      <div class="link-ico">🟣</div>
+      <div class="link-info">
+        <div class="link-name">Twitch</div>
+        <div class="link-handle">twitch.tv/sun69wukong</div>
+      </div>
+      <span class="link-arr">→</span>
+    </a>
+
+    <a href="https://steamcommunity.com/id/Angel_var/" target="_blank" class="link-card">
+      <div class="link-ico">🎮</div>
+      <div class="link-info">
+        <div class="link-name">Steam</div>
+        <div class="link-handle">TTV sun69wukong</div>
+      </div>
+      <span class="link-arr">→</span>
+    </a>
+
+    <a href="https://bsky.app/profile/sun69wukongttv.bsky.social" target="_blank" class="link-card">
+      <div class="link-ico">🦋</div>
+      <div class="link-info">
+        <div class="link-name">Bluesky</div>
+        <div class="link-handle">@sun69wukongttv</div>
+      </div>
+      <span class="link-arr">→</span>
+    </a>
+
+    <a href="https://streamrada.com/sun69wukong" target="_blank" class="link-card">
+      <div class="link-ico">📊</div>
+      <div class="link-info">
+        <div class="link-name">Stream Rada</div>
+        <div class="link-handle">Статистика стрімера</div>
+      </div>
+      <span class="link-arr">→</span>
+    </a>
+
+    <a href="https://www.facebook.com/profile.php?id=61584247929708" target="_blank" class="link-card">
+      <div class="link-ico">🔵</div>
+      <div class="link-info">
+        <div class="link-name">Facebook</div>
+        <div class="link-handle">sun69wukong</div>
+      </div>
+      <span class="link-arr">→</span>
+    </a>
+
+    <a href="https://donatello.to/sun69wukong" target="_blank" class="link-card donate">
+      <div class="link-ico">💛</div>
+      <div class="link-info">
+        <div class="link-name">Donatello</div>
+        <div class="link-handle">Донат стрімеру</div>
+      </div>
+      <span class="link-arr">→</span>
+    </a>
+
+    <a href="https://send.monobank.ua/jar/9Bqrs6GN1V" target="_blank" class="link-card donate">
+      <div class="link-ico">🫙</div>
+      <div class="link-info">
+        <div class="link-name">Monobank</div>
+        <div class="link-handle">Підтримати банкою</div>
+      </div>
+      <span class="link-arr">→</span>
+    </a>
+
+  </div>
+</div>
+
+<footer>❤️ © 24.04.2026 <strong>sun69wukong</strong> ❤️</footer>
+</body>
+</html>

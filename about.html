@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Про мене — sun69wukong</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #9146FF; --accent2: #9146FF; --bg: #07070f; --bg3: #121220; --bg4: #181830;
+      --text: #eeeef8; --muted: #6e6e90; --border: rgba(145,70,255,.18);
+    }
+    body { font-family: 'Rajdhani', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(145,70,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(145,70,255,.04) 1px, transparent 1px);
+      background-size: 44px 44px; pointer-events: none; z-index: 0;
+    }
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 56px;
+      background: rgba(7,7,15,.96); border-bottom: 1px solid var(--border); backdrop-filter: blur(14px);
+    }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 4px; color: var(--accent); text-decoration: none; }
+    .nav-logo span { color: var(--accent2); }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color .2s; padding-bottom: 2px; border-bottom: 2px solid transparent; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .page { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; padding: 100px 24px 60px; }
+    .section-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--accent); margin-bottom: 4px; }
+    .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 5px; margin-bottom: 28px; }
+
+    .about-card {
+      background: var(--bg4); border: 1px solid var(--border); border-radius: 12px; padding: 32px 36px;
+      display: flex; gap: 32px; align-items: flex-start; margin-bottom: 24px;
+    }
+    @media(max-width:600px){ .about-card{ flex-direction:column; padding:24px; } }
+    .about-avatar {
+      width: 90px; height: 90px; flex-shrink: 0; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent) 0%, #00bfff 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: #fff;
+      border: 3px solid var(--accent); box-shadow: 0 0 24px rgba(145,70,255,.5);
+    }
+    .about-text { flex: 1; }
+    .about-name { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 3px; color: var(--accent); margin-bottom: 10px; }
+    .about-bio { font-size: 15px; font-weight: 600; line-height: 1.7; color: #b0b0cc; }
+    .about-bio strong { color: var(--accent); }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-top: 24px; }
+    .stat-card {
+      background: var(--bg4); border: 1px solid var(--border); border-radius: 10px;
+      padding: 20px; text-align: center;
+    }
+    .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 3px; color: var(--accent); line-height: 1; }
+    .stat-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); margin-top: 4px; }
+
+    footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 28px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 60px; }
+    footer strong { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">sun<span>69</span>wukong</a>
+  <div class="nav-links">
+    <a href="index.html">Головна</a>
+    <a href="about.html" class="active">Про мене</a>
+    <a href="stream.html">Стрім</a>
+    <a href="games.html">Ігри</a>
+    <a href="links.html">Посилання</a>
+  </div>
+</nav>
+
+<div class="page">
+  <p class="section-label">// про мене</p>
+  <h1 class="section-title">ХТО Я?</h1>
+
+  <div class="about-card">
+    <div class="about-avatar">S</div>
+    <div class="about-text">
+      <div class="about-name">sun69wukong</div>
+      <p class="about-bio">
+        Ласкаво просимо на канал <strong>sun69wukong</strong>! Тут ви знайдете все, що пов'язано з іграми, переглядом фільмів, аніме та мультиків. Я обожнюю грати в ігри та часто <strong>"горю"</strong> від них, але це лише додає веселощів! Я завжди радий поспілкуватися з вами на різні теми та поділитися своїми думками.
+      </p>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-num">🎮</div>
+      <div class="stat-label">ІГРИ</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">🎬</div>
+      <div class="stat-label">ФІЛЬМИ</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">🌸</div>
+      <div class="stat-label">АНІМЕ</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">📺</div>
+      <div class="stat-label">МУЛЬТИКИ</div>
+    </div>
+  </div>
+</div>
+
+<footer>❤️ © 24.04.2026 <strong>sun69wukong</strong> ❤️</footer>
+</body>
+</html>
