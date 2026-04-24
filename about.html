@@ -40,25 +40,46 @@
       display: flex; gap: 32px; align-items: flex-start; margin-bottom: 24px;
     }
     @media(max-width:600px){ .about-card{ flex-direction:column; padding:24px; } }
+
+    /* Аватар — підтримує і img і fallback */
     .about-avatar {
       width: 90px; height: 90px; flex-shrink: 0; border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid var(--accent); box-shadow: 0 0 24px rgba(145,70,255,.5);
       background: linear-gradient(135deg, var(--accent) 0%, #00bfff 100%);
       display: flex; align-items: center; justify-content: center;
       font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: #fff;
-      border: 3px solid var(--accent); box-shadow: 0 0 24px rgba(145,70,255,.5);
     }
+    .about-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
     .about-text { flex: 1; }
     .about-name { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 3px; color: var(--accent); margin-bottom: 10px; }
     .about-bio { font-size: 15px; font-weight: 600; line-height: 1.7; color: #b0b0cc; }
     .about-bio strong { color: var(--accent); }
 
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-top: 24px; }
+    /* Картки контенту */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-top: 24px; }
     .stat-card {
       background: var(--bg4); border: 1px solid var(--border); border-radius: 10px;
-      padding: 20px; text-align: center;
+      overflow: hidden; text-align: center;
+      transition: border-color .2s, transform .2s;
     }
-    .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 3px; color: var(--accent); line-height: 1; }
-    .stat-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); margin-top: 4px; }
+    .stat-card:hover { border-color: rgba(145,70,255,.45); transform: translateY(-3px); }
+
+    /* Картинка в картці */
+    .stat-img {
+      width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block;
+      background: var(--bg3);
+    }
+    /* Якщо картинки нема — показуємо емодзі-заглушку */
+    .stat-ico {
+      width: 100%; aspect-ratio: 4/3;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 52px; background: var(--bg3);
+    }
+
+    .stat-body { padding: 14px; }
+    .stat-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); }
 
     footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 28px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 60px; }
     footer strong { color: var(--accent); }
@@ -82,7 +103,13 @@
   <h1 class="section-title">ХТО Я?</h1>
 
   <div class="about-card">
-    <div class="about-avatar">S</div>
+
+    <div class="about-avatar">
+      <!-- АВАТАР: вставте посилання на фото нижче -->
+      <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/1061c666-078b-4160-861f-a3c919383f2e-profile_image-70x70.png" alt="sun69wukong">
+      <!-- Якщо прибрати img — покаже букву S як fallback -->
+    </div>
+
     <div class="about-text">
       <div class="about-name">sun69wukong</div>
       <p class="about-bio">
@@ -92,22 +119,40 @@
   </div>
 
   <div class="stats-grid">
+
+    <!-- КАРТКА 1: ІГРИ -->
     <div class="stat-card">
-      <div class="stat-num">🎮</div>
-      <div class="stat-label">ІГРИ</div>
+      <!-- Вставте своє фото/картинку замість емодзі-заглушки -->
+      <img src="https://kultur.jp/wp-content/uploads/2024/01/goty2023_top10-1536x898.jpg" alt="Ігри" class="stat-img">
+      <div class="stat-body">
+        <div class="stat-label">ІГРИ</div>
+      </div>
     </div>
+
+    <!-- КАРТКА 2: ФІЛЬМИ -->
     <div class="stat-card">
-      <div class="stat-num">🎬</div>
-      <div class="stat-label">ФІЛЬМИ</div>
+      <img src="https://i.work.ua/cdn-cgi/image/f=jpeg/article/2489b.jpg?v=1713862817" alt="Фільми" class="stat-img">
+      <div class="stat-body">
+        <div class="stat-label">ФІЛЬМИ</div>
+      </div>
     </div>
+
+    <!-- КАРТКА 3: АНІМЕ -->
     <div class="stat-card">
-      <div class="stat-num">🌸</div>
-      <div class="stat-label">АНІМЕ</div>
+      <img src="https://i.pinimg.com/originals/70/3e/70/703e707fec08440ec56a9130984436e9.jpg" alt="Аніме" class="stat-img">
+      <div class="stat-body">
+        <div class="stat-label">АНІМЕ</div>
+      </div>
     </div>
+
+    <!-- КАРТКА 4: МУЛЬТИКИ -->
     <div class="stat-card">
-      <div class="stat-num">📺</div>
-      <div class="stat-label">МУЛЬТИКИ</div>
+      <img src="https://tse4.mm.bing.net/th/id/OIP.HjZ1LzBmTnQKORjAvBV7egHaE8?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Мультики" class="stat-img">
+      <div class="stat-body">
+        <div class="stat-label">МУЛЬТИКИ</div>
+      </div>
     </div>
+
   </div>
 </div>
 
