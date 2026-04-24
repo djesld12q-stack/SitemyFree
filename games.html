@@ -56,6 +56,8 @@
     }
     .game-card-overlay.playing-overlay { background: rgba(145,70,255,.15); border-color: rgba(145,70,255,.4); color: var(--accent); }
 
+    .section-divider { border: none; border-top: 1px solid var(--border); margin: 50px 0; }
+
     footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 28px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 60px; }
     footer strong { color: var(--accent); }
   </style>
@@ -74,8 +76,40 @@
 </nav>
 
 <div class="page">
+  <p class="section-label">// зараз</p>
+  <h1 class="section-title">ГРАЮ ЗАРАЗ</h1>
+  <div class="games-grid" style="margin-bottom: 60px;">
+
+    <div class="game-card">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3357650/e32e168b25ed68a0cf6264c220c07e96c2abfb56/header.jpg?t=1777005719" alt="PRAGMATA">
+      <div class="game-card-overlay playing-overlay">▶ ГРАЮ</div>
+      <div class="game-card-body">
+        <div class="game-card-title">PRAGMATA</div>
+        <div class="game-card-meta">
+          <span class="game-badge playing">▶ ГРАЮ</span>
+          <span class="game-platform">🎮 STEAM</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="game-card">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2416450/298ff2fc3f6a700d022b8d3ec58047f2b426be03/header.jpg?t=1776902638" alt="Приватний детектив МАУС">
+      <div class="game-card-overlay playing-overlay">▶ ГРАЮ</div>
+      <div class="game-card-body">
+        <div class="game-card-title">Приватний детектив МАУС</div>
+        <div class="game-card-meta">
+          <span class="game-badge playing">▶ ГРАЮ</span>
+          <span class="game-platform">🎮 STEAM</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-divider"></div>
+
   <p class="section-label">// steam</p>
-  <h1 class="section-title">МОЇ ІГРИ</h1>
+  <h2 class="section-title">ПРОЙДЕНІ ІГРИ</h2>
   <div class="games-grid">
 
     <div class="game-card">
@@ -90,8 +124,7 @@
       </div>
     </div>
 
-    
-<div class="game-card">
+    <div class="game-card">
       <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/19680/header.jpg?t=1655743771" alt="Alice: Madness Returns">
       <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
       <div class="game-card-body">
@@ -102,8 +135,8 @@
         </div>
       </div>
     </div>
-  
-<div class="game-card">
+
+    <div class="game-card">
       <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/292030/ad9240e088f953a84aee814034c50a6a92bf4516/header.jpg?t=1768303991" alt="Відьмак 3: Дикий гін">
       <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
       <div class="game-card-body">
@@ -115,8 +148,7 @@
       </div>
     </div>
 
-
-<div class="game-card">
+    <div class="game-card">
       <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/424840/facf9a7a675c6d7f210d96d6b111caffe0386cd5/header.jpg?t=1773135169" alt="Little Nightmares">
       <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
       <div class="game-card-body">
@@ -128,7 +160,7 @@
       </div>
     </div>
 
-<div class="game-card">
+    <div class="game-card">
       <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/860510/header.jpg?t=1730127763" alt="Little Nightmares II">
       <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
       <div class="game-card-body">
@@ -138,10 +170,10 @@
           <span class="game-platform">🎮</span>
         </div>
       </div>
-    </div>    
+    </div>
 
-<div class="game-card">
-      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1392860/7aba96b32736990ec8a131bfdf395d2dc35b282b/header.jpg?t=1767887616" alt="Little Nightmares II">
+    <div class="game-card">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1392860/7aba96b32736990ec8a131bfdf395d2dc35b282b/header.jpg?t=1767887616" alt="Little Nightmares III">
       <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
       <div class="game-card-body">
         <div class="game-card-title">Little Nightmares III</div>
@@ -150,8 +182,9 @@
           <span class="game-platform">🎮</span>
         </div>
       </div>
-    </div>      
-<div class="game-card">
+    </div>
+
+    <div class="game-card">
       <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/12810/header.jpg?t=1656372034" alt="Overlord II">
       <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
       <div class="game-card-body">
@@ -163,7 +196,7 @@
       </div>
     </div>
 
-<div class="game-card">
+    <div class="game-card">
       <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2129530/4cdda917a0155258a2e7909d7869f35d8f980f96/header.jpg?t=1771918402" alt="REANIMAL">
       <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
       <div class="game-card-body">
@@ -173,9 +206,9 @@
           <span class="game-platform">🎮</span>
         </div>
       </div>
-    </div>                 
-    
-<div class="game-card">
+    </div>
+
+    <div class="game-card">
       <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2531310/header.jpg?t=1750959180" alt="The Last of Us™ Part II Remastered">
       <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
       <div class="game-card-body">
@@ -185,7 +218,7 @@
           <span class="game-platform">🎮</span>
         </div>
       </div>
-    </div>   
+    </div>
 
     <div class="game-card">
       <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1888930/header.jpg?t=1750959031" alt="The Last of Us™ Part I">
@@ -197,45 +230,7 @@
           <span class="game-platform">🎮</span>
         </div>
       </div>
-    </div>     
-    
-    
-<div class="game-card">
-      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3357650/e32e168b25ed68a0cf6264c220c07e96c2abfb56/header.jpg?t=1777005719" alt="PRAGMATA">
-      <div class="game-card-overlay playing-overlay">▶ ГРАЮ</div>
-      <div class="game-card-body">
-        <div class="game-card-title">PRAGMATA</div>
-        <div class="game-card-meta">
-          <span class="game-badge playing">▶ ГРАЮ</span>
-          <span class="game-platform">🎮 STEAM</span>
-        </div>
-      </div>
     </div>
-<div class="game-card">
-      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2416450/298ff2fc3f6a700d022b8d3ec58047f2b426be03/header.jpg?t=1776902638" alt="Приватний детектив МАУС">
-      <div class="game-card-overlay playing-overlay">▶ ГРАЮ</div>
-      <div class="game-card-body">
-        <div class="game-card-title">Приватний детектив МАУС</div>
-        <div class="game-card-meta">
-          <span class="game-badge playing">▶ ГРАЮ</span>
-          <span class="game-platform">🎮 STEAM</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ШАБЛОН: ГРАЮ ЗАРАЗ
-    <div class="game-card">
-      <img src="ПОСИЛАННЯ_НА_КАРТИНКУ" alt="НАЗВА">
-      <div class="game-card-overlay playing-overlay">▶ ГРАЮ</div>
-      <div class="game-card-body">
-        <div class="game-card-title">НАЗВА ГРИ</div>
-        <div class="game-card-meta">
-          <span class="game-badge playing">▶ ГРАЮ</span>
-          <span class="game-platform">🎮 STEAM</span>
-        </div>
-      </div>
-    </div>
-    -->
 
   </div>
 </div>
