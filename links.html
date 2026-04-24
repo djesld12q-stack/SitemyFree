@@ -43,7 +43,8 @@
     }
     .link-card:hover { border-color: rgba(145,70,255,.45); transform: translateX(4px); box-shadow: 0 4px 24px rgba(145,70,255,.15); }
     .link-card.donate:hover { border-color: rgba(255,215,0,.35); box-shadow: 0 4px 24px rgba(255,215,0,.1); }
-    .link-ico { font-size: 28px; width: 44px; text-align: center; flex-shrink: 0; }
+    .link-ico { font-size: 28px; width: 44px; height: 44px; text-align: center; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .link-ico img { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; }
     .link-info { flex: 1; }
     .link-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; }
     .link-handle { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-top: 2px; }
@@ -70,11 +71,14 @@
 
 <div class="page">
   <p class="section-label">// посилання</p>
-  <h1 class="section-title">МОЇ КАНАЛИ</h1>
+  <h1 class="section-title">мої сайти</h1>
   <div class="links-list">
 
     <a href="https://www.twitch.tv/sun69wukong" target="_blank" class="link-card">
-      <div class="link-ico"></div>
+      <div class="link-ico">
+      <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/49bb7297-54e4-4614-b162-d720d1eaaa45-profile_image-300x300.png" alt="Twitch"> 
+        
+      </div>
       <div class="link-info">
         <div class="link-name">Twitch</div>
         <div class="link-handle">twitch.tv/sun69wukong</div>
@@ -83,7 +87,10 @@
     </a>
 
     <a href="https://steamcommunity.com/id/Angel_var/" target="_blank" class="link-card">
-      <div class="link-ico"></div>
+      <div class="link-ico">
+      <img src="https://tse2.mm.bing.net/th/id/OIP.8Ec6W5SOcB5Yf1-_2JdIOAAAAA?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Steam"> 
+        
+      </div>
       <div class="link-info">
         <div class="link-name">Steam</div>
         <div class="link-handle">TTV sun69wukong</div>
@@ -92,7 +99,10 @@
     </a>
 
     <a href="https://bsky.app/profile/sun69wukongttv.bsky.social" target="_blank" class="link-card">
-      <div class="link-ico"></div>
+      <div class="link-ico">
+      <img src="https://www.bioinfor.com/wp-content/uploads/2025/06/bsky-ico-55x55.png" alt="Bluesky"> 
+        
+      </div>
       <div class="link-info">
         <div class="link-name">Bluesky</div>
         <div class="link-handle">@sun69wukongttv</div>
@@ -100,8 +110,11 @@
       <span class="link-arr">→</span>
     </a>
 
-    <a href="https://streamrada.com/sun69wukong" target="_blank" class="link-card">
-      <div class="link-ico"></div>
+    <a href="https://stream-rada.com.ua/candidates/sun69wukong" target="_blank" class="link-card">
+      <div class="link-ico">
+     <img src="https://storage.googleapis.com/donatelloupload/17500826400231750082639519ChatGPTImage16%D0%B8%D1%8E%D0%BD.2025%D0%B3.,17_03_48.png" alt="Stream Rada">
+        
+      </div>
       <div class="link-info">
         <div class="link-name">Stream Rada</div>
         <div class="link-handle">Статистика стрімера</div>
@@ -110,7 +123,10 @@
     </a>
 
     <a href="https://www.facebook.com/profile.php?id=61584247929708" target="_blank" class="link-card">
-      <div class="link-ico"></div>
+      <div class="link-ico">
+       <img src="https://7fon.club/uploads/posts/2023-01/1672688249_34-7fon-club-p-feisbuk-znachok-58.png" alt="Facebook">
+        
+      </div>
       <div class="link-info">
         <div class="link-name">Facebook</div>
         <div class="link-handle">sun69wukong</div>
@@ -119,7 +135,10 @@
     </a>
 
     <a href="https://donatello.to/sun69wukong" target="_blank" class="link-card donate">
-      <div class="link-ico"></div>
+      <div class="link-ico">
+        <img src="https://cdn-icons-png.flaticon.com/512/11859/11859357.png" alt="Donatello"> 
+       
+      </div>
       <div class="link-info">
         <div class="link-name">Donatello</div>
         <div class="link-handle">Донат стрімеру</div>
@@ -128,10 +147,13 @@
     </a>
 
     <a href="https://send.monobank.ua/jar/9Bqrs6GN1V" target="_blank" class="link-card donate">
-      <div class="link-ico"></div>
+      <div class="link-ico">
+        <img src="https://play-lh.googleusercontent.com/Y2M3HewFpm9bthitkDNaRUe11Llco97qclZh6-cpBJ6FJTfOiGHQM1eZ7eKn-rt8PQ=w240-h480" alt="Monobank"> 
+        
+      </div>
       <div class="link-info">
         <div class="link-name">Monobank</div>
-        <div class="link-handle">Підтримати банкою</div>
+        <div class="link-handle">Донат стрімеру</div>
       </div>
       <span class="link-arr">→</span>
     </a>
