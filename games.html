@@ -11,6 +11,7 @@
     :root {
       --accent: #9146FF; --bg: #07070f; --bg4: #181830;
       --text: #eeeef8; --muted: #6e6e90; --border: rgba(145,70,255,.18);
+      --green: #00c864; --yellow: #f5c518;
     }
     body { font-family: 'Rajdhani', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
     body::before {
@@ -18,6 +19,7 @@
       background-image: linear-gradient(rgba(145,70,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(145,70,255,.04) 1px, transparent 1px);
       background-size: 44px 44px; pointer-events: none; z-index: 0;
     }
+
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
@@ -35,28 +37,97 @@
     .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 5px; margin-bottom: 28px; }
 
     .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+
     .game-card {
       background: var(--bg4); border: 1px solid var(--border); border-radius: 10px;
       overflow: hidden; transition: transform .2s, border-color .2s, box-shadow .2s; position: relative;
+      cursor: pointer;
     }
     .game-card:hover { transform: translateY(-4px); border-color: rgba(145,70,255,.45); box-shadow: 0 12px 40px rgba(145,70,255,.2); }
+    .game-card:hover .card-hover-hint { opacity: 1; }
+
     .game-card img { width: 100%; aspect-ratio: 460/215; object-fit: cover; display: block; }
+
+    .card-hover-hint {
+      position: absolute; top: 0; left: 0; right: 0;
+      aspect-ratio: 460/215;
+      background: rgba(7,7,15,.72);
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--text);
+      opacity: 0; transition: opacity .2s; pointer-events: none;
+    }
+
     .game-card-body { padding: 14px 16px 16px; }
     .game-card-title { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; color: var(--text); margin-bottom: 6px; }
     .game-card-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .game-badge { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; padding: 3px 10px; border-radius: 2px; }
-    .game-badge.done { background: rgba(0,200,100,.1); border: 1px solid rgba(0,200,100,.35); color: #00c864; }
-    .game-badge.playing { background: rgba(145,70,255,.1); border: 1px solid rgba(145,70,255,.35); color: var(--accent); }
+    .game-badge.done    { background: rgba(0,200,100,.1);   border: 1px solid rgba(0,200,100,.35);  color: var(--green);  }
+    .game-badge.playing { background: rgba(145,70,255,.1);  border: 1px solid rgba(145,70,255,.35); color: var(--accent); }
+    .game-badge.planned { background: rgba(245,197,24,.08); border: 1px solid rgba(245,197,24,.35); color: var(--yellow); }
     .game-platform { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 1px; color: var(--muted); margin-left: auto; }
+
     .game-card-overlay {
       position: absolute; top: 8px; right: 8px;
       background: rgba(0,200,100,.15); border: 1px solid rgba(0,200,100,.4);
       border-radius: 2px; padding: 3px 8px;
-      font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; color: #00c864;
+      font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--green);
+      pointer-events: none;
     }
     .game-card-overlay.playing-overlay { background: rgba(145,70,255,.15); border-color: rgba(145,70,255,.4); color: var(--accent); }
+    .game-card-overlay.planned-overlay { background: rgba(245,197,24,.1);  border-color: rgba(245,197,24,.4); color: var(--yellow); }
+
+    .card-rating-chip {
+      position: absolute; top: 8px; left: 8px;
+      background: rgba(7,7,15,.85); border: 1px solid rgba(245,197,24,.5);
+      border-radius: 3px; padding: 3px 8px;
+      font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--yellow);
+      pointer-events: none;
+    }
 
     .section-divider { border: none; border-top: 1px solid var(--border); margin: 50px 0; }
+
+    /* ── MODAL ── */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(7,7,15,.88); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+      opacity: 0; pointer-events: none; transition: opacity .25s;
+    }
+    .modal-backdrop.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: #0e0e20; border: 1px solid var(--border); border-radius: 14px;
+      width: 100%; max-width: 520px;
+      transform: translateY(20px) scale(.97); transition: transform .25s;
+      overflow: hidden;
+    }
+    .modal-backdrop.open .modal { transform: translateY(0) scale(1); }
+
+    .modal-cover { width: 100%; aspect-ratio: 460/215; object-fit: cover; display: block; border-bottom: 1px solid var(--border); }
+    .modal-body  { padding: 20px 24px 24px; }
+    .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 3px; margin-bottom: 16px; }
+
+    .modal-rating-row { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+    .modal-score { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--yellow); line-height: 1; }
+    .modal-score-denom { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2px; color: var(--muted); margin-top: 4px; }
+    .modal-score-bar { flex: 1; height: 5px; background: rgba(255,255,255,.07); border-radius: 3px; overflow: hidden; }
+    .modal-score-fill { height: 100%; background: linear-gradient(90deg, var(--yellow), #ffaa00); border-radius: 3px; transition: width .5s cubic-bezier(.4,0,.2,1); }
+
+    .modal-review-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); margin-bottom: 8px; }
+    .modal-review-text {
+      background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 8px;
+      padding: 12px 14px; font-size: 15px; line-height: 1.6; color: var(--text); white-space: pre-wrap;
+      margin-bottom: 18px;
+    }
+    .modal-no-review { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 18px; }
+
+    .modal-close-btn {
+      display: block; width: 100%;
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px;
+      padding: 10px; border-radius: 8px; border: 1px solid var(--border);
+      background: transparent; color: var(--muted); cursor: pointer; transition: border-color .15s, color .15s;
+    }
+    .modal-close-btn:hover { border-color: var(--accent); color: var(--accent); }
 
     footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 28px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 60px; }
     footer strong { color: var(--accent); }
@@ -77,12 +148,38 @@
 </nav>
 
 <div class="page">
+
+  <!--
+  ╔══════════════════════════════════════════════════════════════════╗
+  ║  ЯК ДОДАВАТИ / РЕДАГУВАТИ ВІДГУК І ОЦІНКУ                      ║
+  ║                                                                  ║
+  ║  На кожній картці є 2 атрибути які ти змінюєш в коді:           ║
+  ║                                                                  ║
+  ║  data-rating="8"          ← оцінка від 1 до 10                  ║
+  ║                              або "" якщо ще не оцінено           ║
+  ║                                                                  ║
+  ║  data-review="Мій текст"  ← текст відгуку                       ║
+  ║                              або "" якщо ще немає               ║
+  ║                                                                  ║
+  ║  Для переносу рядка в тексті пиши &#10; між реченнями            ║
+  ║  Приклад: data-review="Рядок 1.&#10;Рядок 2."                   ║
+  ╚══════════════════════════════════════════════════════════════════╝
+  -->
+
+
+  <!-- ══════════ ГРАЮ ЗАРАЗ ══════════ -->
   <p class="section-label">// зараз</p>
   <h1 class="section-title">ГРАЮ ЗАРАЗ</h1>
   <div class="games-grid" style="margin-bottom: 60px;">
 
-    <div class="game-card">
+    <!-- ЩЕ ГРАЮ — оцінки немає, відгук порожній -->
+    <div class="game-card"
+         data-title="PRAGMATA"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3357650/e32e168b25ed68a0cf6264c220c07e96c2abfb56/header.jpg?t=1777005719"
+         data-rating=""
+         data-review="">
       <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3357650/e32e168b25ed68a0cf6264c220c07e96c2abfb56/header.jpg?t=1777005719" alt="PRAGMATA">
+      <div class="card-hover-hint">👁 ПОДИВИТИСЬ</div>
       <div class="game-card-overlay playing-overlay">▶ ГРАЮ</div>
       <div class="game-card-body">
         <div class="game-card-title">PRAGMATA</div>
@@ -93,8 +190,14 @@
       </div>
     </div>
 
-    <div class="game-card">
+    <!-- ЩЕ ГРАЮ — оцінки немає, відгук порожній -->
+    <div class="game-card"
+         data-title="Приватний детектив МАУС"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2416450/298ff2fc3f6a700d022b8d3ec58047f2b426be03/header.jpg?t=1776902638"
+         data-rating=""
+         data-review="">
       <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2416450/298ff2fc3f6a700d022b8d3ec58047f2b426be03/header.jpg?t=1776902638" alt="Приватний детектив МАУС">
+      <div class="card-hover-hint">👁 ПОДИВИТИСЬ</div>
       <div class="game-card-overlay playing-overlay">▶ ГРАЮ</div>
       <div class="game-card-body">
         <div class="game-card-title">Приватний детектив МАУС</div>
@@ -109,13 +212,21 @@
 
   <div class="section-divider"></div>
 
+  <!-- ══════════ ПРОЙДЕНІ ІГРИ ══════════ -->
   <p class="section-label">// steam</p>
   <h2 class="section-title">ПРОЙДЕНІ ІГРИ</h2>
-  <div class="games-grid">
+  <div class="games-grid" style="margin-bottom: 60px;">
 
-    <div class="game-card">
+    <!-- ПОВНИЙ ВІДГУК + ОЦІНКА 10/10 -->
+    <div class="game-card"
+         data-title="God of War Ragnarök"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2322010/header.jpg?t=1776465233"
+         data-rating="10"
+         data-review="Афігена гра во цее просто сама крута гра. звук 10 із 10 . геймплей 10 із 10 . сюжет 10 із 10 . бої 10 із 10 рекомендую просто усім людям в це пограти!">
       <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2322010/header.jpg?t=1776465233" alt="God of War Ragnarök">
+      <div class="card-hover-hint">★ ПЕРЕГЛЯНУТИ ВІДГУК</div>
       <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
+      <div class="card-rating-chip">★ 10/10</div>
       <div class="game-card-body">
         <div class="game-card-title">God of War Ragnarök</div>
         <div class="game-card-meta">
@@ -125,9 +236,35 @@
       </div>
     </div>
 
-    <div class="game-card">
-      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/19680/header.jpg?t=1655743771" alt="Alice: Madness Returns">
+
+<div class="game-card"
+         data-title="God of War"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2322010/header.jpg?t=1776465233"
+         data-rating="10"
+         data-review="Рекомендую пограти в цю гру усім охочим ви не  пожалієте! ">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1593500/header.jpg?t=1763059412" alt="God of War">
+      <div class="card-hover-hint">★ ПЕРЕГЛЯНУТИ ВІДГУК</div>
       <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
+      <div class="card-rating-chip">★ 10/10</div>
+      <div class="game-card-body">
+        <div class="game-card-title">God of War</div>
+        <div class="game-card-meta">
+          <span class="game-badge done">✓ ПРОЙДЕНО</span>
+          <span class="game-platform">🎮</span>
+        </div>
+      </div>
+    </div>
+
+<!-- ВІДГУК З ПЕРЕНОСОМ РЯДКА (&#10;) + ОЦІНКА 8/10 -->
+    <div class="game-card"
+         data-title="Alice: Madness Returns"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/19680/header.jpg?t=1655743771"
+         data-rating="7.5"
+         data-review="Гра цікава . але інколи буває дуже нудною головоломки важкі але це ще нормально . моби легкі як і боси. і рекомендую і не рекомендую тут вже думайте чи хочте ви її пограти">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/19680/header.jpg?t=1655743771" alt="Alice: Madness Returns">
+      <div class="card-hover-hint">★ ПЕРЕГЛЯНУТИ ВІДГУК</div>
+      <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
+      <div class="card-rating-chip">★ 7.5/10</div>
       <div class="game-card-body">
         <div class="game-card-title">Alice: Madness Returns</div>
         <div class="game-card-meta">
@@ -137,9 +274,16 @@
       </div>
     </div>
 
-    <div class="game-card">
-      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/292030/ad9240e088f953a84aee814034c50a6a92bf4516/header.jpg?t=1768303991" alt="Відьмак 3: Дикий гін">
+    <!-- ТІЛЬКИ ОЦІНКА, БЕЗ ТЕКСТУ — data-review="" -->
+    <div class="game-card"
+         data-title="Відьмак 3: Дикий гін"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/292030/ad9240e088f953a84aee814034c50a6a92bf4516/header.jpg?t=1768303991"
+         data-rating="10"
+         data-review="Сюжет класний.звуковий супровід афігений. атмосферність гри чуденса. перепроходив 6 раз рекомендую усім пограти в цю гру!">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/292030/ad9240e088f953a84aee814034c50a6a92bf4516/header.jpg?t=1768303991" alt="Відьмак 3">
+      <div class="card-hover-hint">★ ПЕРЕГЛЯНУТИ ВІДГУК</div>
       <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
+      <div class="card-rating-chip">★ 10/10</div>
       <div class="game-card-body">
         <div class="game-card-title">Відьмак 3: Дикий гін</div>
         <div class="game-card-meta">
@@ -149,9 +293,15 @@
       </div>
     </div>
 
-    <div class="game-card">
-      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/424840/facf9a7a675c6d7f210d96d6b111caffe0386cd5/header.jpg?t=1773135169" alt="Little Nightmares">
+    <div class="game-card"
+         data-title="Little Nightmares I"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/424840/facf9a7a675c6d7f210d96d6b111caffe0386cd5/header.jpg?t=1773135169"
+         data-rating="10"
+         data-review="Гра класна і звуки гри чудесні атмосфера афігена!">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/424840/facf9a7a675c6d7f210d96d6b111caffe0386cd5/header.jpg?t=1773135169" alt="Little Nightmares I">
+      <div class="card-hover-hint">★ ПЕРЕГЛЯНУТИ ВІДГУК</div>
       <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
+      <div class="card-rating-chip">★ 10/10</div>
       <div class="game-card-body">
         <div class="game-card-title">Little Nightmares I</div>
         <div class="game-card-meta">
@@ -161,9 +311,15 @@
       </div>
     </div>
 
-    <div class="game-card">
+    <div class="game-card"
+         data-title="Little Nightmares II"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/860510/header.jpg?t=1730127763"
+         data-rating="10"
+         data-review="Также дуже цікава і прикольна гра рекомендую на проходження гри">
       <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/860510/header.jpg?t=1730127763" alt="Little Nightmares II">
+      <div class="card-hover-hint">★ ПЕРЕГЛЯНУТИ ВІДГУК</div>
       <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
+      <div class="card-rating-chip">★ 10/10</div>
       <div class="game-card-body">
         <div class="game-card-title">Little Nightmares II</div>
         <div class="game-card-meta">
@@ -173,9 +329,15 @@
       </div>
     </div>
 
-    <div class="game-card">
+    <div class="game-card"
+         data-title="Little Nightmares III"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1392860/7aba96b32736990ec8a131bfdf395d2dc35b282b/header.jpg?t=1767887616"
+         data-rating="10"
+         data-review="Гра дуже цікава і стиль класний але дуже коротка але прикольна!">
       <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1392860/7aba96b32736990ec8a131bfdf395d2dc35b282b/header.jpg?t=1767887616" alt="Little Nightmares III">
+      <div class="card-hover-hint">★ ПЕРЕГЛЯНУТИ ВІДГУК</div>
       <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
+      <div class="card-rating-chip">★ 10/10</div>
       <div class="game-card-body">
         <div class="game-card-title">Little Nightmares III</div>
         <div class="game-card-meta">
@@ -185,9 +347,15 @@
       </div>
     </div>
 
-    <div class="game-card">
+    <div class="game-card"
+         data-title="Overlord II"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/12810/header.jpg?t=1656372034"
+         data-rating="10"
+         data-review="Прикольна гра де можна давати пиз%%лей дітям і за то нічого не буде">
       <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/12810/header.jpg?t=1656372034" alt="Overlord II">
+      <div class="card-hover-hint">★ ПЕРЕГЛЯНУТИ ВІДГУК</div>
       <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
+      <div class="card-rating-chip">★ 10/10</div>
       <div class="game-card-body">
         <div class="game-card-title">Overlord II</div>
         <div class="game-card-meta">
@@ -197,9 +365,15 @@
       </div>
     </div>
 
-    <div class="game-card">
+    <div class="game-card"
+         data-title="REANIMAL"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2129530/4cdda917a0155258a2e7909d7869f35d8f980f96/header.jpg?t=1771918402"
+         data-rating="10"
+         data-review="Кінець цієї ігри мене здивував. атмосфера в цій грі афігена. головоломки такі як мають бути. легкі і прості. рекомендую пограти усім охочим в цю гру">
       <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2129530/4cdda917a0155258a2e7909d7869f35d8f980f96/header.jpg?t=1771918402" alt="REANIMAL">
+      <div class="card-hover-hint">★ ПЕРЕГЛЯНУТИ ВІДГУК</div>
       <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
+      <div class="card-rating-chip">★ 10/10</div>
       <div class="game-card-body">
         <div class="game-card-title">REANIMAL</div>
         <div class="game-card-meta">
@@ -209,9 +383,15 @@
       </div>
     </div>
 
-    <div class="game-card">
-      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2531310/header.jpg?t=1750959180" alt="The Last of Us™ Part II Remastered">
+    <div class="game-card"
+         data-title="The Last of Us™ Part II Remastered"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2531310/header.jpg?t=1750959180"
+         data-rating="10"
+         data-review="Гра прикольна. атмосфреність цікава. сюжет не зрозумілий. гемплей афігений. рекомендую пограти в цю гру">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2531310/header.jpg?t=1750959180" alt="TLOU2">
+      <div class="card-hover-hint">★ ПЕРЕГЛЯНУТИ ВІДГУК</div>
       <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
+      <div class="card-rating-chip">★ 10/10</div>
       <div class="game-card-body">
         <div class="game-card-title">The Last of Us™ Part II Remastered</div>
         <div class="game-card-meta">
@@ -221,9 +401,15 @@
       </div>
     </div>
 
-    <div class="game-card">
-      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1888930/header.jpg?t=1750959031" alt="The Last of Us™ Part I">
+    <div class="game-card"
+         data-title="The Last of Us™ Part I"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1888930/header.jpg?t=1750959031"
+         data-rating="10"
+         data-review="Як не дивно але ця остання із нас краща за другий останій із нас рекомендую пограти в цю гру як і другу">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1888930/header.jpg?t=1750959031" alt="TLOU1">
+      <div class="card-hover-hint">★ ПЕРЕГЛЯНУТИ ВІДГУК</div>
       <div class="game-card-overlay">✓ ПРОЙДЕНО</div>
+      <div class="card-rating-chip">★ 10/10</div>
       <div class="game-card-body">
         <div class="game-card-title">The Last of Us™ Part I</div>
         <div class="game-card-meta">
@@ -234,8 +420,333 @@
     </div>
 
   </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ══════════ ЗАПЛАНОВАНІ ══════════ -->
+  <p class="section-label">// wishlist</p>
+  <h2 class="section-title">ЗАПЛАНОВАНІ</h2>
+  <div class="games-grid">
+
+    <!-- ЗАПЛАНОВАНА — є нотатки, оцінки немає -->
+    <div class="game-card"
+         data-title="DYNASTY WARRIORS: ORIGINS"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2384580/header.jpg?t=1775536473"
+         data-rating=""
+         data-review="">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2384580/header.jpg?t=1775536473" alt="DYNASTY WARRIORS: ORIGINS">
+      <div class="card-hover-hint">👁 НОТАТКИ</div>
+      <div class="game-card-overlay planned-overlay">⏳ Планах пограти</div>
+      <div class="game-card-body">
+        <div class="game-card-title">DYNASTY WARRIORS: ORIGINS</div>
+        <div class="game-card-meta">
+          <span class="game-platform">🎮 STEAM</span>
+        </div>
+      </div>
+    </div>
+
+<div class="game-card"
+         data-title="Absolum"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1904480/65f868078425ea29b87cb85075fcd1b3a8b71400/header.jpg?t=1772809437"
+         data-rating=""
+         data-review="">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1904480/65f868078425ea29b87cb85075fcd1b3a8b71400/header.jpg?t=1772809437" alt="Absolum">
+      <div class="card-hover-hint">👁 НОТАТКИ</div>
+      <div class="game-card-overlay planned-overlay">⏳ Планах пограти</div>
+      <div class="game-card-body">
+        <div class="game-card-title">Absolum</div>
+        <div class="game-card-meta">
+          <span class="game-platform">🎮 STEAM</span>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- ЗАПЛАНОВАНА — без нотаток -->
+    <div class="game-card"
+         data-title="Elden Ring"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg?t=1698860631"
+         data-rating=""
+         data-review="">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg?t=1698860631" alt="Elden Ring">
+      <div class="card-hover-hint">👁 ПОДИВИТИСЬ</div>
+      <div class="game-card-overlay planned-overlay">⏳ планах пограти</div>
+      <div class="game-card-body">
+        <div class="game-card-title">Elden Ring</div>
+        <div class="game-card-meta">
+         <span class="game-platform">🎮 STEAM</span>
+        </div>
+      </div>
+    </div>
+
+<div class="game-card"
+         data-title="Stellar Blade™"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3489700/header.jpg?t=1776466244"
+         data-rating=""
+         data-review="">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3489700/header.jpg?t=1776466244" alt="Stellar Blade™">
+      <div class="card-hover-hint">👁 ПОДИВИТИСЬ</div>
+      <div class="game-card-overlay planned-overlay">⏳ планах пограти</div>
+      <div class="game-card-body">
+        <div class="game-card-title">Stellar Blade™</div>
+        <div class="game-card-meta">
+         <span class="game-platform">🎮 STEAM</span>
+        </div>
+      </div>
+    </div>
+
+ <div class="game-card"
+         data-title="Resident Evil Requiem"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3764200/ce5437442768e38eb575f205ab9397d0264017b0/header.jpg?t=1772587704"
+         data-rating=""
+         data-review="">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3764200/ce5437442768e38eb575f205ab9397d0264017b0/header.jpg?t=1772587704" alt="Resident Evil Requiem">
+      <div class="card-hover-hint">👁 ПОДИВИТИСЬ</div>
+      <div class="game-card-overlay planned-overlay">⏳ планах пограти</div>
+      <div class="game-card-body">
+        <div class="game-card-title">Resident Evil Requiem</div>
+        <div class="game-card-meta">
+         <span class="game-platform">🎮 STEAM</span>
+        </div>
+      </div>
+    </div>   
+  
+  <div class="game-card"
+         data-title="State of Decay 3"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1340720/header.jpg?t=1718067214"
+         data-rating=""
+         data-review="">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1340720/header.jpg?t=1718067214" alt="State of Decay 3">
+      <div class="card-hover-hint">👁 ПОДИВИТИСЬ</div>
+      <div class="game-card-overlay planned-overlay">⏳ планах пограти</div>
+      <div class="game-card-body">
+        <div class="game-card-title">State of Decay 3</div>
+        <div class="game-card-meta">
+         <span class="game-platform">🎮 STEAM</span>
+        </div>
+      </div>
+    </div>   
+
+    <div class="game-card"
+         data-title="Tides of Annihilation"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3292470/header.jpg?t=1764067359"
+         data-rating=""
+         data-review="">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3292470/header.jpg?t=1764067359" alt="Tides of Annihilation">
+      <div class="card-hover-hint">👁 ПОДИВИТИСЬ</div>
+      <div class="game-card-overlay planned-overlay">⏳ планах пограти</div>
+      <div class="game-card-body">
+        <div class="game-card-title">Tides of Annihilation</div>
+        <div class="game-card-meta">
+         <span class="game-platform">🎮 STEAM</span>
+        </div>
+      </div>
+    </div> 
+
+   <div class="game-card"
+         data-title="Onimusha: Way of the Sword"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2638890/7b0993d5b7260711ad17aaf7b178ce72f5553796/header.jpg?t=1773275856"
+         data-rating=""
+         data-review="">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2638890/7b0993d5b7260711ad17aaf7b178ce72f5553796/header.jpg?t=1773275856" alt="Onimusha: Way of the Sword">
+      <div class="card-hover-hint">👁 ПОДИВИТИСЬ</div>
+      <div class="game-card-overlay planned-overlay">⏳ планах пограти</div>
+      <div class="game-card-body">
+        <div class="game-card-title">Onimusha: Way of the Sword</div>
+        <div class="game-card-meta">
+         <span class="game-platform">🎮 STEAM</span>
+        </div>
+      </div>
+    </div>  
+
+<div class="game-card"
+         data-title="La Divina Commedia"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3883910/6bb43e189c397edf81d1ef4221250815fe393311/header.jpg?t=1755858524"
+         data-rating=""
+         data-review="">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3883910/6bb43e189c397edf81d1ef4221250815fe393311/header.jpg?t=1755858524" alt="La Divina Commedia">
+      <div class="card-hover-hint">👁 ПОДИВИТИСЬ</div>
+      <div class="game-card-overlay planned-overlay">⏳ планах пограти</div>
+      <div class="game-card-body">
+        <div class="game-card-title">La Divina Commedia</div>
+        <div class="game-card-meta">
+         <span class="game-platform">🎮 STEAM</span>
+        </div>
+      </div>
+    </div>  
+
+<div class="game-card"
+         data-title="Mistfall Hunter"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3282300/076ea16a152eb54368b86b1f1a918f361a7e7390/header_alt_assets_4.jpg?t=1775548432"
+         data-rating=""
+         data-review="">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3282300/076ea16a152eb54368b86b1f1a918f361a7e7390/header_alt_assets_4.jpg?t=1775548432" alt="Mistfall Hunter">
+      <div class="card-hover-hint">👁 ПОДИВИТИСЬ</div>
+      <div class="game-card-overlay planned-overlay">⏳ планах пограти</div>
+      <div class="game-card-body">
+        <div class="game-card-title">Mistfall Hunter</div>
+        <div class="game-card-meta">
+         <span class="game-platform">🎮 STEAM</span>
+        </div>
+      </div>
+    </div>
+
+<div class="game-card"
+         data-title="Valor Mortis"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2828710/e729c7f909db5c52ea780923d9b258517162866a/header.jpg?t=1775752046"
+         data-rating=""
+         data-review="">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2828710/e729c7f909db5c52ea780923d9b258517162866a/header.jpg?t=1775752046" alt="Valor Mortis">
+      <div class="card-hover-hint">👁 ПОДИВИТИСЬ</div>
+      <div class="game-card-overlay planned-overlay">⏳ планах пограти</div>
+      <div class="game-card-body">
+        <div class="game-card-title">Valor Mortis</div>
+        <div class="game-card-meta">
+         <span class="game-platform">🎮 STEAM</span>
+        </div>
+      </div>
+    </div>   
+
+<div class="game-card"
+         data-title="Darksiders 4"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1203170/1dffc8cc0b74ab4e002e904d9022d54650bc84c8/header.jpg?t=1754915105"
+         data-rating=""
+         data-review="">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1203170/1dffc8cc0b74ab4e002e904d9022d54650bc84c8/header.jpg?t=1754915105" alt="Darksiders 4">
+      <div class="card-hover-hint">👁 ПОДИВИТИСЬ</div>
+      <div class="game-card-overlay planned-overlay">⏳ планах пограти</div>
+      <div class="game-card-body">
+        <div class="game-card-title">Darksiders 4</div>
+        <div class="game-card-meta">
+         <span class="game-platform">🎮 STEAM</span>
+        </div>
+      </div>
+    </div> 
+
+    <div class="game-card"
+         data-title="Phantom Blade Zero"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4115450/5930310dc5f043a1df400d9dc70ddb43843480fc/header.jpg?t=1766676850"
+         data-rating=""
+         data-review="">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4115450/5930310dc5f043a1df400d9dc70ddb43843480fc/header.jpg?t=1766676850" alt="Phantom Blade Zero">
+      <div class="card-hover-hint">👁 ПОДИВИТИСЬ</div>
+      <div class="game-card-overlay planned-overlay">⏳ планах пограти</div>
+      <div class="game-card-body">
+        <div class="game-card-title">Phantom Blade Zero</div>
+        <div class="game-card-meta">
+         <span class="game-platform">🎮 STEAM</span>
+        </div>
+      </div>
+    </div>    
+
+    <div class="game-card"
+         data-title="METRO 2039"
+         data-img="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2590240/6998fb70f896b0f155061de0b472a8262bd06ef9/header.jpg?t=1776779267"
+         data-rating=""
+         data-review="">
+      <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2590240/6998fb70f896b0f155061de0b472a8262bd06ef9/header.jpg?t=1776779267" alt="Phantom Blade Zero">
+      <div class="card-hover-hint">👁 ПОДИВИТИСЬ</div>
+      <div class="game-card-overlay planned-overlay">⏳ планах пограти</div>
+      <div class="game-card-body">
+        <div class="game-card-title">METRO 2039</div>
+        <div class="game-card-meta">
+         <span class="game-platform">🎮 STEAM</span>
+        </div>
+      </div>
+    </div>    
+
+
+
+  </div>
+</div>
+
+<!-- ══════════ MODAL (READ-ONLY) ══════════ -->
+<div class="modal-backdrop" id="reviewModal">
+  <div class="modal">
+    <img class="modal-cover" id="modalCover" src="" alt="">
+    <div class="modal-body">
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-rating-row" id="modalRatingRow">
+        <div>
+          <div class="modal-score" id="modalScore"></div>
+          <div class="modal-score-denom">/ 10</div>
+        </div>
+        <div style="flex:1">
+          <div class="modal-score-bar"><div class="modal-score-fill" id="modalScoreFill"></div></div>
+        </div>
+      </div>
+      <div class="modal-review-label" id="modalReviewLabel"></div>
+      <div class="modal-review-text"  id="modalReviewText"></div>
+      <div class="modal-no-review"    id="modalNoReview"></div>
+      <button class="modal-close-btn" onclick="closeModal()">✕ ЗАКРИТИ</button>
+    </div>
+  </div>
 </div>
 
 <footer>❤️ © 24.04.2026 <strong>sun69wukong</strong> ❤️</footer>
+
+<script>
+  document.querySelectorAll('.game-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const title  = card.dataset.title;
+      const img    = card.dataset.img;
+      const rating = card.dataset.rating;
+      const review = card.dataset.review;
+
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalCover').src = img;
+      document.getElementById('modalCover').alt = title;
+
+      const ratingRow   = document.getElementById('modalRatingRow');
+      const scoreEl     = document.getElementById('modalScore');
+      const scoreFill   = document.getElementById('modalScoreFill');
+      const reviewLabel = document.getElementById('modalReviewLabel');
+      const reviewText  = document.getElementById('modalReviewText');
+      const noReview    = document.getElementById('modalNoReview');
+
+      /* rating bar */
+      if (rating) {
+        ratingRow.style.display = 'flex';
+        scoreEl.textContent = rating;
+        /* delay so transition plays after modal opens */
+        setTimeout(() => { scoreFill.style.width = (parseInt(rating) * 10) + '%'; }, 60);
+      } else {
+        ratingRow.style.display = 'none';
+        scoreFill.style.width = '0%';
+      }
+
+      /* review text */
+      if (review) {
+        reviewLabel.textContent    = '// МІЙ ВІДГУК';
+        reviewLabel.style.display  = 'block';
+        reviewText.textContent     = review;
+        reviewText.style.display   = 'block';
+        noReview.style.display     = 'none';
+      } else {
+        reviewLabel.style.display  = 'none';
+        reviewText.style.display   = 'none';
+        noReview.style.display     = 'block';
+        noReview.textContent       = rating
+          ? '// відгук ще не написано'
+          : '// відгук і оцінка ще не додані';
+      }
+
+      document.getElementById('reviewModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  function closeModal() {
+    document.getElementById('reviewModal').classList.remove('open');
+    document.body.style.overflow = '';
+    document.getElementById('modalScoreFill').style.width = '0%';
+  }
+
+  document.getElementById('reviewModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('reviewModal')) closeModal();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
 </body>
 </html>
