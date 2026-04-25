@@ -165,7 +165,6 @@
         var iframe = document.createElement('iframe');
         // &parent може містити кілька доменів через кому
         iframe.src = 'https://player.twitch.tv/?channel=sun69wukong&parent=' + parent + '&autoplay=false&muted=false';
-        iframe.allowFullscreen = true;
         iframe.allow = 'autoplay; fullscreen';
         iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
         wrap.style.position = 'relative';
@@ -264,7 +263,7 @@ const STREAMERS = [
     card.dataset.idx = idx;
 
     const avContent = s.avatar
-      ? `<img src="${s.avatar}" alt="${s.name}" loading="lazy">`
+      ? `<img src="${s.avatar}" alt="${s.name}">`
       : initials(s.name);
     const avBg = s.avatar
       ? ''
@@ -280,8 +279,8 @@ const STREAMERS = [
       <div class="sc-thumb">
         ${previewUrl ? `
           <img class="sc-preview" id="prev-${idx}"
-            src="${previewUrl}?_=${Date.now()}"
-            alt="preview" loading="lazy"
+            src="${previewUrl}"
+            alt="preview"
             style="display:none"
           >` : ''}
         <div class="sc-thumb-offline" id="offline-${idx}">
@@ -305,24 +304,24 @@ const STREAMERS = [
     card.addEventListener('click', () => window.open(s.url, '_blank'));
     track.appendChild(card);
 
-    // Перевіряємо онлайн-статус через завантаження превью
-    if (previewUrl) {
-      const img = document.getElementById(`prev-${idx}`);
+    // Перевіряємо онлайн-статус через fetch — надійніше ніж onload
+    if (previewUrl && s.twitch) {
       const offlineEl = document.getElementById(`offline-${idx}`);
       const liveBadge = document.getElementById(`live-${idx}`);
+      const imgEl    = document.getElementById(`prev-${idx}`);
 
-      img.onload = function() {
-        // wsrv.nl повертає реальне зображення якщо онлайн (>100px широке)
-        // або маленьку error-картинку якщо офлайн
-        if (img.naturalWidth > 50 && img.naturalHeight > 20) {
-          img.style.display = 'block';
-          offlineEl.style.display = 'none';
-          liveBadge.classList.remove('hidden');
+      // Завантажуємо через Image() об'єкт без lazy — одразу
+      const probe = new Image();
+      probe.onload = function() {
+        if (probe.naturalWidth > 50 && probe.naturalHeight > 20) {
+          if (imgEl) { imgEl.src = previewUrl; imgEl.style.display = 'block'; }
+          if (offlineEl) offlineEl.style.display = 'none';
+          if (liveBadge) liveBadge.classList.remove('hidden');
         }
       };
-      img.onerror = function() {
-        // помилка — офлайн або проксі недоступний, лишаємо offline вигляд
-      };
+      probe.onerror = function() { /* офлайн — нічого не робимо */ };
+      // Додаємо timestamp щоб уникнути кешу
+      probe.src = previewUrl + '&t=' + Date.now();
     }
   });
 
