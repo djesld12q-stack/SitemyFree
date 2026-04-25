@@ -60,21 +60,38 @@
     @media(max-width: 700px) { .schedule-grid { grid-template-columns: repeat(2, 1fr); } }
     .day-card {
       background: var(--bg4); border: 1px solid var(--border); border-radius: 10px;
-      padding: 16px 12px; text-align: center;
+      text-align: center;
       transition: transform .2s, border-color .2s, box-shadow .2s;
       position: relative; overflow: hidden;
     }
     .day-card::before {
       content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-      background: transparent;
+      background: transparent; z-index: 2;
     }
     .day-card.stream::before { background: var(--accent); }
     .day-card.stream { border-color: rgba(145,70,255,.4); box-shadow: 0 0 24px rgba(145,70,255,.12); }
     .day-card.today { border-color: rgba(145,70,255,.7) !important; box-shadow: 0 0 32px rgba(145,70,255,.25) !important; }
     .day-card:hover { transform: translateY(-4px); }
-    .day-name { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; }
+
+    /* картинка зверху картки */
+    .day-img {
+      width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block;
+      background: var(--bg3);
+    }
+    /* заглушка якщо img не вказано */
+    .day-img-placeholder {
+      width: 100%; aspect-ratio: 4/3;
+      background: var(--bg3);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .day-img-placeholder span {
+      font-size: 32px; opacity: .25;
+    }
+
+    .day-body { padding: 12px 10px; }
+    .day-name { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
     .day-card.today .day-name { color: var(--accent); }
-    .day-indicator { width: 10px; height: 10px; border-radius: 50%; margin: 0 auto 10px; }
+    .day-indicator { width: 10px; height: 10px; border-radius: 50%; margin: 0 auto 8px; }
     .day-indicator.on { background: var(--accent); box-shadow: 0 0 10px rgba(145,70,255,.8); animation: pulse 1.8s ease-in-out infinite; }
     .day-indicator.off { background: var(--muted); opacity: .35; }
     @keyframes pulse { 0%,100%{box-shadow:0 0 6px rgba(145,70,255,.6)} 50%{box-shadow:0 0 16px rgba(145,70,255,1)} }
@@ -174,15 +191,19 @@
   // stream: true = стрімлю, false = вихідний
   // time:   час початку (наприклад '20:00')
   // note:   коментар під часом (необов'язково)
+  // img:    посилання на картинку (необов'язково, можна '')
+  //
+  // Приклад:
+  // { day: 'Вт', stream: true, time: '20:00', note: 'Ігри', img: 'https://...' },
   // ════════════════════════════════════════
   const SCHEDULE = [
-    { day: 'Пн',  stream: true, time: '16:00',  note: 'PRAGMATA' },
-    { day: 'Вт',  stream: true, time: '16:00',  note: 'PRAGMATA' },
-    { day: 'Ср',  stream: true, time: '16:00',  note: 'PRAGMATA' },
-    { day: 'Чт',  stream: true, time: '16:00',  note: 'Приватний детектив МАУС' },
-    { day: 'Пт',  stream: true, time: '16:00',  note: 'Приватний детектив МАУС' },
-    { day: 'Сб',  stream: false, time: 'Будь коли',  note: 'PRAGMATA' },
-    { day: 'Нд',  stream: false, time: 'Не стрімлю',  note: '' },
+    { day: 'Пн',  stream: false, time: '',  note: '', img: '' },
+    { day: 'Вт',  stream: false, time: '',  note: '', img: '' },
+    { day: 'Ср',  stream: false, time: '',  note: '', img: '' },
+    { day: 'Чт',  stream: false, time: '',  note: '', img: '' },
+    { day: 'Пт',  stream: false, time: '',  note: '', img: '' },
+    { day: 'Сб',  stream: false, time: '',  note: '', img: '' },
+    { day: 'Нд',  stream: false, time: '',  note: '', img: '' },
   ];
 
   const jsDay = new Date().getDay();
@@ -193,10 +214,15 @@
     const card = document.createElement('div');
     card.className = 'day-card' + (d.stream ? ' stream' : '') + (isToday ? ' today' : '');
     card.innerHTML = `
-      <div class="day-name">${d.day}${isToday ? ' · сьогодні' : ''}</div>
-      <div class="day-indicator ${d.stream ? 'on' : 'off'}"></div>
-      <div class="day-time">${d.stream ? (d.time || '—:——') : 'Вихідний'}</div>
-      ${d.note ? `<div class="day-note">${d.note}</div>` : ''}
+      ${d.img
+        ? `<img class="day-img" src="${d.img}" alt="${d.day}">`
+        : `<div class="day-img-placeholder"><span>📅</span></div>`}
+      <div class="day-body">
+        <div class="day-name">${d.day}${isToday ? ' · сьогодні' : ''}</div>
+        <div class="day-indicator ${d.stream ? 'on' : 'off'}"></div>
+        <div class="day-time">${d.stream ? (d.time || '—:——') : 'Вихідний'}</div>
+        ${d.note ? `<div class="day-note">${d.note}</div>` : ''}
+      </div>
     `;
     grid.appendChild(card);
   });
