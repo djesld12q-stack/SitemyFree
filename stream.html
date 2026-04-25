@@ -213,10 +213,10 @@
 // ════════════════════════════════════════════════
 const STREAMERS = [
   {
-    name: 'sun69wukong',
-    url: 'https://www.twitch.tv/sun69wukong',
-    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/1061c666-078b-4160-861f-a3c919383f2e-profile_image-70x70.png',
-    twitch: 'sun69wukong',
+    name: 'Ong_Ba',
+    url: 'https://www.twitch.tv/ong_ba',
+    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/46e2417a-8fbe-4b8c-ac25-dbfd26060702-profile_image-70x70.png',
+    twitch: 'ong_ba',
   },
   {
     name: '1okisan',
@@ -225,23 +225,31 @@ const STREAMERS = [
     twitch: '1okisan',
   },
   {
-    name: 'Shroud',
-    url: 'https://www.twitch.tv/shroud',
-    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/7ed75e0a-09b5-4059-85e4-2e4bc1c4e733-profile_image-70x70.png',
-    twitch: 'shroud',
+    name: 'OpenToGame',
+    url: 'https://www.twitch.tv/opentogame',
+    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/4434a2c5-f31e-43e4-b488-f9f585e52a8c-profile_image-70x70.png',
+    twitch: 'opentogame',
   },
   {
-    name: 'Ninja',
-    url: 'https://www.twitch.tv/ninja',
-    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/ninja-profile_image-a3416b3b2f6618b8-70x70.jpeg',
-    twitch: 'ninja',
+    name: 'KaIIiToIIIkA',
+    url: 'https://www.twitch.tv/kaiiitoiiika',
+    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/78498af0-5d61-47a2-a753-3b7dd54f330f-profile_image-70x70.png',
+    twitch: 'kaiiitoiiika',
   },
   {
-    name: 'Pokimane',
-    url: 'https://www.twitch.tv/pokimane',
-    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/pokimane-profile_image-a6b43e0d15c45e24-70x70.jpeg',
-    twitch: 'pokimane',
+    name: 'demonicniy_gamer',
+    url: 'https://www.twitch.tv/demonicniy_gamer',
+    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/b0ac17a7-4498-47bf-9534-ec4bb18b3737-profile_image-70x70.png',
+    twitch: 'demonicniy_gamer',
   },
+ {
+    name: 'LAVER_stream',
+    url: 'https://www.twitch.tv/laver_stream',
+    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/49b3b2fd-f465-4843-8703-5df5fa593d34-profile_image-70x70.png',
+    twitch: 'laver_stream',
+  },
+
+
 ];
 
 // ════════════════════════════════════════════════
@@ -325,6 +333,26 @@ const STREAMERS = [
     }
   });
 
+  // Клонуємо картки для безкінечного циклу: [клони кінця] [оригінали] [клони початку]
+  const clonesBefore = VISIBLE; // скільки клонів спереду
+  const clonesAfter  = VISIBLE; // скільки клонів ззаду
+
+  function buildClones() {
+    const cards = Array.from(track.querySelectorAll('.sc-card'));
+    // клони з кінця — вставляємо на початок
+    for (let i = total - clonesBefore; i < total; i++) {
+      const clone = cards[i].cloneNode(true);
+      clone.classList.add('sc-clone');
+      track.insertBefore(clone, track.firstChild);
+    }
+    // клони з початку — додаємо в кінець
+    for (let i = 0; i < clonesAfter; i++) {
+      const clone = cards[i].cloneNode(true);
+      clone.classList.add('sc-clone');
+      track.appendChild(clone);
+    }
+  }
+
   function cardStep() {
     return (viewport.clientWidth - GAP * (VISIBLE - 1)) / VISIBLE + GAP;
   }
@@ -332,15 +360,35 @@ const STREAMERS = [
     const w = (viewport.clientWidth - GAP * (VISIBLE - 1)) / VISIBLE;
     track.querySelectorAll('.sc-card').forEach(c => { c.style.width = w + 'px'; });
   }
-  function goTo(idx) {
-    current = ((idx % total) + total) % total;
-    track.style.transform = `translateX(-${current * cardStep()}px)`;
+
+  let isTransitioning = false;
+
+  function goTo(idx, animate = true) {
+    current = idx;
+    const offset = (clonesBefore + current) * cardStep();
+    if (!animate) {
+      track.style.transition = 'none';
+    } else {
+      track.style.transition = 'transform .38s cubic-bezier(.4,0,.2,1)';
+    }
+    track.style.transform = `translateX(-${offset}px)`;
     renderDots();
   }
+
+  // Після анімації — тихо перестрибуємо якщо вийшли за межі
+  track.addEventListener('transitionend', () => {
+    if (current < 0) {
+      goTo(current + total, false);
+    } else if (current >= total) {
+      goTo(current - total, false);
+    }
+    isTransitioning = false;
+  });
+
   function renderDots() {
     dotsEl.innerHTML = '';
     const n = Math.ceil(total / VISIBLE);
-    const active = Math.floor(current / VISIBLE) % n;
+    const active = Math.floor(((current % total) + total) % total / VISIBLE) % n;
     for (let i = 0; i < n; i++) {
       const d = document.createElement('div');
       d.className = 'cdot' + (i === active ? ' active' : '');
@@ -349,8 +397,8 @@ const STREAMERS = [
     }
   }
 
-  document.getElementById('btnPrev').addEventListener('click', () => goTo(current - 1));
-  document.getElementById('btnNext').addEventListener('click', () => goTo(current + 1));
+  document.getElementById('btnPrev').addEventListener('click', () => { goTo(current - 1); });
+  document.getElementById('btnNext').addEventListener('click', () => { goTo(current + 1); });
 
   let tx = 0;
   viewport.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
@@ -362,11 +410,12 @@ const STREAMERS = [
   let rt;
   window.addEventListener('resize', () => {
     clearTimeout(rt);
-    rt = setTimeout(() => { setWidths(); goTo(current); }, 80);
+    rt = setTimeout(() => { setWidths(); goTo(current, false); }, 80);
   });
 
+  buildClones();
   setWidths();
-  goTo(0);
+  goTo(0, false);
 })();
 </script>
 </body>
