@@ -44,7 +44,37 @@
     .stream-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--red); box-shadow: 0 0 7px rgba(255,68,68,.8); animation: blink 1.5s step-end infinite; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.1} }
     .stream-ltxt { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--red); letter-spacing: 1px; }
+
+    /* Основний блок: плеєр + чат поруч */
+    .stream-body { display: flex; align-items: stretch; }
+    .stream-player-wrap { flex: 1 1 auto; min-width: 0; }
     .stream-player { background: #040408; position: relative; width: 100%; aspect-ratio: 16/9; min-height: 240px; }
+
+    /* Чат */
+    .stream-chat-wrap {
+      width: 320px; flex-shrink: 0;
+      border-left: 1px solid rgba(145,70,255,.12);
+      display: flex; flex-direction: column;
+    }
+    .stream-chat-label {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 14px;
+      background: var(--bg3); border-bottom: 1px solid rgba(145,70,255,.12);
+      font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted);
+    }
+    .stream-chat-label span { color: var(--accent); }
+    .stream-chat-frame {
+      flex: 1; border: none; display: block;
+      background: var(--bg4);
+      min-height: 400px;
+    }
+
+    @media (max-width: 720px) {
+      .stream-body { flex-direction: column; }
+      .stream-chat-wrap { width: 100%; border-left: none; border-top: 1px solid rgba(145,70,255,.12); }
+      .stream-chat-frame { min-height: 340px; }
+    }
+
     .stream-ftr { display: flex; align-items: center; justify-content: space-between; padding: 12px 22px; }
     .tw-link { display: inline-flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); text-decoration: none; letter-spacing: 1px; transition: opacity .2s; }
     .tw-link:hover { opacity: .7; }
@@ -84,10 +114,22 @@
         <span class="stream-ltxt">LIVE</span>
       </div>
     </div>
-    <div class="stream-player" id="stream-player-wrap"></div>
+    <div class="stream-body">
+      <div class="stream-player-wrap">
+        <div class="stream-player" id="stream-player-wrap"></div>
+      </div>
+      <div class="stream-chat-wrap">
+        <div class="stream-chat-label">
+          <span>💬</span> ЧАТ
+        </div>
+        <iframe id="stream-chat-frame" class="stream-chat-frame" allowfullscreen></iframe>
+      </div>
+    </div>
     <script>
       (function(){
         var parent = window.location.hostname || 'sun69wukong.github.io';
+
+        // Плеєр
         var wrap = document.getElementById('stream-player-wrap');
         var iframe = document.createElement('iframe');
         iframe.src = 'https://player.twitch.tv/?channel=sun69wukong&parent=' + parent + '&autoplay=false';
@@ -95,6 +137,10 @@
         iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
         wrap.style.position = 'relative';
         wrap.appendChild(iframe);
+
+        // Чат
+        var chat = document.getElementById('stream-chat-frame');
+        chat.src = 'https://www.twitch.tv/embed/sun69wukong/chat?parent=' + parent + '&darkpopout';
       })();
     </script>
     <div class="stream-ftr">
