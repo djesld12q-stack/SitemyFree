@@ -270,19 +270,20 @@ const STREAMERS = [
       ? ''
       : `style="background:linear-gradient(135deg,hsl(${hue(s.name)},65%,35%),hsl(${(hue(s.name)+60)%360},55%,22%))"`;
 
-    // Twitch CDN preview — через проксі щоб обійти CORS
-    // wsrv.nl — безкоштовний публічний image proxy, не потребує токенів
+    // Twitch CDN preview — прямий URL (не потребує токена, але лише для онлайн каналів)
+    const ts = Date.now();
     const previewUrl = s.twitch
-      ? `https://wsrv.nl/?url=static-cdn.jtvnw.net/previews-ttv/live_user_${s.twitch.toLowerCase()}-320x180.jpg&w=320&h=180&_=${Date.now()}`
+      ? `https://static-cdn.jtvnw.net/previews-ttv/live_user_${s.twitch.toLowerCase()}-320x180.jpg?_=${ts}`
       : null;
 
     card.innerHTML = `
       <div class="sc-thumb">
         ${previewUrl ? `
           <img class="sc-preview" id="prev-${idx}"
-            src="${previewUrl}?_=${Date.now()}"
+            src="${previewUrl}"
             alt="preview" loading="lazy"
             style="display:none"
+            crossorigin="anonymous"
           >` : ''}
         <div class="sc-thumb-offline" id="offline-${idx}">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="#9146FF"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
@@ -312,16 +313,16 @@ const STREAMERS = [
       const liveBadge = document.getElementById(`live-${idx}`);
 
       img.onload = function() {
-        // wsrv.nl повертає реальне зображення якщо онлайн (>100px широке)
-        // або маленьку error-картинку якщо офлайн
-        if (img.naturalWidth > 50 && img.naturalHeight > 20) {
+        // Twitch CDN: якщо онлайн — повертає 320x180, якщо офлайн — 404 або заглушку <50px
+        if (img.naturalWidth > 60) {
           img.style.display = 'block';
           offlineEl.style.display = 'none';
           liveBadge.classList.remove('hidden');
         }
+        // якщо naturalWidth <= 60 — офлайн, лишаємо offline вигляд
       };
       img.onerror = function() {
-        // помилка — офлайн або проксі недоступний, лишаємо offline вигляд
+        // 404 — канал офлайн, лишаємо offline вигляд
       };
     }
   });
