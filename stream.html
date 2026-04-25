@@ -153,68 +153,23 @@
         <span class="stream-ltxt">LIVE</span>
       </div>
     </div>
-    <div class="stream-player" id="stream-player-wrap">
-      <!-- Постер з кнопкою play — iframe завантажується тільки після кліку -->
-      <div id="stream-poster" style="position:absolute;inset:0;cursor:pointer;background:#040408;display:flex;align-items:center;justify-content:center;">
-        <img id="stream-poster-img"
-          src="https://static-cdn.jtvnw.net/previews-ttv/live_user_sun69wukong-1280x720.jpg?_=1"
-          alt="stream preview"
-          style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .4s;"
-          onerror="this.style.display='none'"
-        >
-        <!-- темний оверлей -->
-        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(4,4,8,.7) 0%,transparent 60%);pointer-events:none;"></div>
-        <!-- кнопка play -->
-        <div id="play-btn" style="
-          position:relative;z-index:2;
-          width:72px;height:72px;border-radius:50%;
-          background:rgba(145,70,255,.92);
-          display:flex;align-items:center;justify-content:center;
-          box-shadow:0 0 40px rgba(145,70,255,.6);
-          transition:transform .18s,box-shadow .18s;
-        ">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff" style="margin-left:4px">
-            <path d="M7 20.528V3.472c0-.38.405-.603.703-.388L20 12 7.703 20.916c-.298.215-.703-.008-.703-.388Z"/>
-          </svg>
-        </div>
-        <!-- підказка -->
-        <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(238,238,248,.6);letter-spacing:1px;pointer-events:none;">
-          НАТИСНИ ЩОБ ДИВИТИСЬ
-        </div>
-      </div>
-    </div>
+    <div class="stream-player" id="stream-player-wrap"></div>
     <script>
       (function(){
-        var wrap   = document.getElementById('stream-player-wrap');
-        var poster = document.getElementById('stream-poster');
-        var img    = document.getElementById('stream-poster-img');
-        var btn    = document.getElementById('play-btn');
-
-        // Спробуємо завантажити превью (може бути офлайн)
-        img.onload = function(){ if(img.naturalWidth > 8) img.style.opacity = '1'; };
-
-        // Ховер на кнопку
-        btn.addEventListener('mouseenter', function(){ btn.style.transform='scale(1.12)'; btn.style.boxShadow='0 0 60px rgba(145,70,255,.85)'; });
-        btn.addEventListener('mouseleave', function(){ btn.style.transform='scale(1)'; btn.style.boxShadow='0 0 40px rgba(145,70,255,.6)'; });
-
-        // Клік — підміняємо постер на iframe
-        poster.addEventListener('click', function(){
-          var host = window.location.hostname;
-          var parent = (host && host !== 'localhost' && host !== '127.0.0.1')
-            ? host : 'djesld12q-stack.github.io';
-
-          poster.style.opacity = '0';
-          poster.style.transition = 'opacity .3s';
-
-          setTimeout(function(){
-            poster.remove();
-            var iframe = document.createElement('iframe');
-            iframe.src = 'https://player.twitch.tv/?channel=sun69wukong&parent=' + parent + '&autoplay=true';
-            iframe.allow = 'autoplay; fullscreen; picture-in-picture';
-            iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
-            wrap.appendChild(iframe);
-          }, 300);
-        });
+        var host = window.location.hostname;
+        // Twitch вимагає точний домен — перелічуємо всі можливі
+        var parent = (host && host !== 'localhost' && host !== '127.0.0.1')
+          ? host
+          : 'djesld12q-stack.github.io';
+        var wrap = document.getElementById('stream-player-wrap');
+        var iframe = document.createElement('iframe');
+        // &parent може містити кілька доменів через кому
+        iframe.src = 'https://player.twitch.tv/?channel=sun69wukong&parent=' + parent + '&autoplay=false&muted=false';
+        iframe.allowFullscreen = true;
+        iframe.allow = 'autoplay; fullscreen';
+        iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
+        wrap.style.position = 'relative';
+        wrap.appendChild(iframe);
       })();
     </script>
     <div class="stream-ftr">
@@ -309,20 +264,26 @@ const STREAMERS = [
     card.dataset.idx = idx;
 
     const avContent = s.avatar
-      ? `<img src="${s.avatar}" alt="${s.name}">`
+      ? `<img src="${s.avatar}" alt="${s.name}" loading="lazy">`
       : initials(s.name);
     const avBg = s.avatar
       ? ''
       : `style="background:linear-gradient(135deg,hsl(${hue(s.name)},65%,35%),hsl(${(hue(s.name)+60)%360},55%,22%))"`;
 
-    // previewUrl — пряме посилання для відображення (якщо онлайн)
+    // Twitch CDN preview — через проксі щоб обійти CORS
+    // wsrv.nl — безкоштовний публічний image proxy, не потребує токенів
     const previewUrl = s.twitch
-      ? `https://static-cdn.jtvnw.net/previews-ttv/live_user_${s.twitch.toLowerCase()}-320x180.jpg`
+      ? `https://wsrv.nl/?url=static-cdn.jtvnw.net/previews-ttv/live_user_${s.twitch.toLowerCase()}-320x180.jpg&w=320&h=180&_=${Date.now()}`
       : null;
 
     card.innerHTML = `
       <div class="sc-thumb">
-        ${previewUrl ? `<img class="sc-preview" id="prev-${idx}" alt="preview" style="display:none">` : ''}
+        ${previewUrl ? `
+          <img class="sc-preview" id="prev-${idx}"
+            src="${previewUrl}?_=${Date.now()}"
+            alt="preview" loading="lazy"
+            style="display:none"
+          >` : ''}
         <div class="sc-thumb-offline" id="offline-${idx}">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="#9146FF"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
           <span>OFFLINE</span>
@@ -344,30 +305,24 @@ const STREAMERS = [
     card.addEventListener('click', () => window.open(s.url, '_blank'));
     track.appendChild(card);
 
-    // Перевіряємо LIVE статус через Twitch oEmbed API (підтримує CORS)
-    if (s.twitch && previewUrl) {
+    // Перевіряємо онлайн-статус через завантаження превью
+    if (previewUrl) {
+      const img = document.getElementById(`prev-${idx}`);
       const offlineEl = document.getElementById(`offline-${idx}`);
       const liveBadge = document.getElementById(`live-${idx}`);
-      const imgEl     = document.getElementById(`prev-${idx}`);
 
-      const oembedUrl = `https://www.twitch.tv/oembed?url=https://www.twitch.tv/${s.twitch.toLowerCase()}&format=json`;
-
-      fetch(oembedUrl)
-        .then(r => r.json())
-        .then(data => {
-          // oEmbed повертає thumbnail_url
-          // Якщо стрімер онлайн — thumbnail містить "previews-ttv"
-          // Якщо офлайн — містить "ttv-static" або "channel_offline_image"
-          const thumb = data.thumbnail_url || '';
-          const isLive = thumb.includes('previews-ttv');
-          if (isLive) {
-            const liveThumb = previewUrl + '?_=' + Date.now();
-            if (imgEl)     { imgEl.src = liveThumb; imgEl.style.display = 'block'; }
-            if (offlineEl)   offlineEl.style.display = 'none';
-            if (liveBadge)   liveBadge.classList.remove('hidden');
-          }
-        })
-        .catch(() => { /* мережева помилка — лишаємо offline */ });
+      img.onload = function() {
+        // wsrv.nl повертає реальне зображення якщо онлайн (>100px широке)
+        // або маленьку error-картинку якщо офлайн
+        if (img.naturalWidth > 50 && img.naturalHeight > 20) {
+          img.style.display = 'block';
+          offlineEl.style.display = 'none';
+          liveBadge.classList.remove('hidden');
+        }
+      };
+      img.onerror = function() {
+        // помилка — офлайн або проксі недоступний, лишаємо offline вигляд
+      };
     }
   });
 
