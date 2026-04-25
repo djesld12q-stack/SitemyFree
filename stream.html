@@ -281,9 +281,8 @@ const STREAMERS = [
         ${previewUrl ? `
           <img class="sc-preview" id="prev-${idx}"
             src="${previewUrl}"
-            alt="preview" loading="lazy"
+            alt="preview"
             style="display:none"
-            crossorigin="anonymous"
           >` : ''}
         <div class="sc-thumb-offline" id="offline-${idx}">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="#9146FF"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
@@ -313,16 +312,14 @@ const STREAMERS = [
       const liveBadge = document.getElementById(`live-${idx}`);
 
       img.onload = function() {
-        // Twitch CDN: якщо онлайн — повертає 320x180, якщо офлайн — 404 або заглушку <50px
-        if (img.naturalWidth > 60) {
-          img.style.display = 'block';
-          offlineEl.style.display = 'none';
-          liveBadge.classList.remove('hidden');
-        }
-        // якщо naturalWidth <= 60 — офлайн, лишаємо offline вигляд
+        // Twitch повертає 404 якщо офлайн (тоді onload не викликається)
+        // Якщо onload — значить онлайн, показуємо превью
+        img.style.display = 'block';
+        offlineEl.style.display = 'none';
+        liveBadge.classList.remove('hidden');
       };
       img.onerror = function() {
-        // 404 — канал офлайн, лишаємо offline вигляд
+        // 404 = офлайн, лишаємо offline вигляд
       };
     }
   });
