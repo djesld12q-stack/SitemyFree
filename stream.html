@@ -156,11 +156,17 @@
     <div class="stream-player" id="stream-player-wrap"></div>
     <script>
       (function(){
-        var parent = window.location.hostname || 'sun69wukong.github.io';
+        var host = window.location.hostname;
+        // Twitch вимагає точний домен — перелічуємо всі можливі
+        var parent = (host && host !== 'localhost' && host !== '127.0.0.1')
+          ? host
+          : 'djesld12q-stack.github.io';
         var wrap = document.getElementById('stream-player-wrap');
         var iframe = document.createElement('iframe');
-        iframe.src = 'https://player.twitch.tv/?channel=sun69wukong&parent=' + parent + '&autoplay=false';
+        // &parent може містити кілька доменів через кому
+        iframe.src = 'https://player.twitch.tv/?channel=sun69wukong&parent=' + parent + '&autoplay=false&muted=false';
         iframe.allowFullscreen = true;
+        iframe.allow = 'autoplay; fullscreen';
         iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
         wrap.style.position = 'relative';
         wrap.appendChild(iframe);
@@ -218,22 +224,22 @@ const STREAMERS = [
     twitch: '1okisan',
   },
   {
-    name: 'KaIIiToIIIkA',
-    url: 'https://www.twitch.tv/kaiiitoiiika',
-    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/78498af0-5d61-47a2-a753-3b7dd54f330f-profile_image-70x70.png',
-    twitch: 'kaiiitoiiika',
+    name: 'Shroud',
+    url: 'https://www.twitch.tv/shroud',
+    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/7ed75e0a-09b5-4059-85e4-2e4bc1c4e733-profile_image-70x70.png',
+    twitch: 'shroud',
   },
   {
-    name: 'demonicniy_gamer',
-    url: 'https://www.twitch.tv/demonicniy_gamer',
-    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/b0ac17a7-4498-47bf-9534-ec4bb18b3737-profile_image-70x70.png',
-    twitch: 'demonicniy_gamer',
+    name: 'Ninja',
+    url: 'https://www.twitch.tv/ninja',
+    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/ninja-profile_image-a3416b3b2f6618b8-70x70.jpeg',
+    twitch: 'ninja',
   },
   {
-    name: 'opentogame',
-    url: 'https://www.twitch.tv/opentogame',
-    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/4434a2c5-f31e-43e4-b488-f9f585e52a8c-profile_image-70x70.png',
-    twitch: 'opentogame',
+    name: 'Pokimane',
+    url: 'https://www.twitch.tv/pokimane',
+    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/pokimane-profile_image-a6b43e0d15c45e24-70x70.jpeg',
+    twitch: 'pokimane',
   },
 ];
 
@@ -264,9 +270,10 @@ const STREAMERS = [
       ? ''
       : `style="background:linear-gradient(135deg,hsl(${hue(s.name)},65%,35%),hsl(${(hue(s.name)+60)%360},55%,22%))"`;
 
-    // Twitch CDN preview — існує тільки якщо стрімер онлайн
+    // Twitch CDN preview — через проксі щоб обійти CORS
+    // wsrv.nl — безкоштовний публічний image proxy, не потребує токенів
     const previewUrl = s.twitch
-      ? `https://static-cdn.jtvnw.net/previews-ttv/live_user_${s.twitch.toLowerCase()}-320x180.jpg`
+      ? `https://wsrv.nl/?url=static-cdn.jtvnw.net/previews-ttv/live_user_${s.twitch.toLowerCase()}-320x180.jpg&w=320&h=180&_=${Date.now()}`
       : null;
 
     card.innerHTML = `
@@ -305,16 +312,16 @@ const STREAMERS = [
       const liveBadge = document.getElementById(`live-${idx}`);
 
       img.onload = function() {
-        // Twitch повертає однакову "offline" картинку ~1x1px або конкретний розмір
-        if (img.naturalWidth > 8) {
+        // wsrv.nl повертає реальне зображення якщо онлайн (>100px широке)
+        // або маленьку error-картинку якщо офлайн
+        if (img.naturalWidth > 50 && img.naturalHeight > 20) {
           img.style.display = 'block';
           offlineEl.style.display = 'none';
           liveBadge.classList.remove('hidden');
         }
-        // якщо naturalWidth <= 8 — це placeholder, лишаємо offline
       };
       img.onerror = function() {
-        // 404 = точно офлайн, нічого не міняємо
+        // помилка — офлайн або проксі недоступний, лишаємо offline вигляд
       };
     }
   });
