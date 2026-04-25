@@ -185,6 +185,31 @@
     .dropdown-menu a:hover { color: var(--text); background: rgba(145,70,255,.08); }
     .dropdown-menu a.active { color: var(--accent); }
     .nav-dropdown > a.dropdown-active { color: var(--accent); border-bottom-color: var(--accent) !important; }
+
+    /* ══════════ MOBILE GAMES ══════════ */
+    @media(max-width:600px){
+      .games-grid { grid-template-columns:1fr 1fr; gap:10px; }
+    }
+    @media(max-width:380px){
+      .games-grid { grid-template-columns:1fr; }
+      .page { padding: 76px 12px 36px; }
+    }
+    /* Modal mobile */
+    .modal { max-height:92vh; overflow-y:auto; }
+    @media(max-width:540px){
+      .modal-backdrop { padding:12px; align-items:flex-end; }
+      .modal { border-radius:14px 14px 0 0; max-width:100%; max-height:88vh; }
+      .modal-body { padding:16px 16px 20px; }
+      .modal-score { font-size:38px; }
+      .modal-title { font-size:22px; }
+    }
+
+
+    @media(max-width:380px){
+      .mobile-menu a { font-size:26px; letter-spacing:2px; }
+      .mobile-menu { gap:20px; }
+    }
+
   </style>
 </head>
 <body>

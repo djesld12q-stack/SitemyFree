@@ -176,6 +176,26 @@
     .dropdown-menu a:hover { color: var(--text); background: rgba(145,70,255,.08); }
     .dropdown-menu a.active { color: var(--accent); }
     .nav-dropdown > a.dropdown-active { color: var(--accent); border-bottom-color: var(--accent) !important; }
+
+    /* ══════════ MOBILE STREAM ══════════ */
+    @media(max-width:600px){
+      .stream-hdr { flex-direction:column; align-items:flex-start; gap:10px; padding:12px 16px; }
+      .stream-ftr { flex-direction:column; align-items:flex-start; gap:8px; padding:10px 16px; }
+      .carousel-btn { width:36px; height:36px; }
+      .carousel-outer { margin:0 -4px; }
+    }
+    @media(max-width:480px){
+      .page { padding: 76px 14px 40px; }
+      nav { padding:0 14px; }
+      footer { padding:18px 14px; }
+    }
+
+
+    @media(max-width:380px){
+      .mobile-menu a { font-size:26px; letter-spacing:2px; }
+      .mobile-menu { gap:20px; }
+    }
+
   </style>
 </head>
 <body>
