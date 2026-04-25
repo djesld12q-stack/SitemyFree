@@ -79,6 +79,7 @@
       position: absolute; inset: 0; display: flex; flex-direction: column;
       align-items: center; justify-content: center; gap: 6px;
       background: linear-gradient(135deg, #0a0a18, #100e22);
+      z-index: 2;
     }
     .sc-thumb-offline svg { opacity: .12; }
     .sc-thumb-offline span {
@@ -282,7 +283,6 @@ const STREAMERS = [
           <img class="sc-preview" id="prev-${idx}"
             src="${previewUrl}"
             alt="preview"
-            style="display:none"
           >` : ''}
         <div class="sc-thumb-offline" id="offline-${idx}">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="#9146FF"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
@@ -312,14 +312,15 @@ const STREAMERS = [
       const liveBadge = document.getElementById(`live-${idx}`);
 
       img.onload = function() {
-        // Twitch повертає 404 якщо офлайн (тоді onload не викликається)
-        // Якщо onload — значить онлайн, показуємо превью
-        img.style.display = 'block';
+        // Twitch повертає 404 якщо офлайн
+        // Якщо onload — значить онлайн, ховаємо offline overlay
         offlineEl.style.display = 'none';
         liveBadge.classList.remove('hidden');
       };
       img.onerror = function() {
-        // 404 = офлайн, лишаємо offline вигляд
+        // 404 = офлайн — ховаємо зображення, показуємо offline overlay
+        img.style.display = 'none';
+        offlineEl.style.display = 'flex';
       };
     }
   });
