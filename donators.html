@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Топ донатери — sun69wukong</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #9146FF; --bg: #07070f; --bg3: #121220; --bg4: #181830;
+      --text: #eeeef8; --muted: #6e6e90; --border: rgba(145,70,255,.18);
+      --gold: #FFD700; --silver: #C0C0C0; --bronze: #CD7F32;
+    }
+    body { font-family: 'Rajdhani', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(145,70,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(145,70,255,.04) 1px, transparent 1px);
+      background-size: 44px 44px; pointer-events: none; z-index: 0;
+    }
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 56px;
+      background: rgba(7,7,15,.96); border-bottom: 1px solid var(--border); backdrop-filter: blur(14px);
+    }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 4px; color: var(--accent); text-decoration: none; }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color .2s; padding-bottom: 2px; border-bottom: 2px solid transparent; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; z-index: 300; }
+    .burger span { display: block; width: 24px; height: 2px; background: var(--text); border-radius: 2px; transition: all .3s; }
+    .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .burger.open span:nth-child(2) { opacity: 0; }
+    .burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-menu {
+      display: none; position: fixed; top: 56px; left: 0; right: 0; bottom: 0; z-index: 150;
+      background: rgba(7,7,15,.98); backdrop-filter: blur(20px);
+      flex-direction: column; align-items: center; justify-content: center; gap: 28px;
+      border-top: 1px solid var(--border);
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 4px; color: var(--muted); text-decoration: none; transition: color .2s; }
+    .mobile-menu a:hover, .mobile-menu a.active { color: var(--accent); }
+    @media(max-width: 768px) { nav { padding: 0 20px; } .nav-links { display: none; } .burger { display: flex; } }
+    .page { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 100px 24px 60px; }
+    .section-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--accent); margin-bottom: 4px; }
+    .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 5px; margin-bottom: 28px; }
+    footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 28px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 60px; }
+    footer strong { color: var(--accent); }
+
+    /* ── LEADERBOARD ── */
+    .leaderboard { display: flex; flex-direction: column; gap: 10px; }
+    .lb-card {
+      display: flex; align-items: center; gap: 16px;
+      background: var(--bg4); border: 1px solid var(--border); border-radius: 10px;
+      padding: 14px 20px; transition: transform .15s, border-color .2s, box-shadow .2s;
+      position: relative; overflow: hidden;
+    }
+    .lb-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+    .lb-card.rank-1::before { background: var(--gold); }
+    .lb-card.rank-2::before { background: var(--silver); }
+    .lb-card.rank-3::before { background: var(--bronze); }
+    .lb-card:hover { transform: translateX(4px); border-color: rgba(145,70,255,.4); box-shadow: 0 4px 24px rgba(145,70,255,.1); }
+    .lb-rank { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; width: 36px; text-align: center; flex-shrink: 0; }
+    .rank-1 .lb-rank { color: var(--gold); text-shadow: 0 0 16px rgba(255,215,0,.5); }
+    .rank-2 .lb-rank { color: var(--silver); }
+    .rank-3 .lb-rank { color: var(--bronze); }
+    .lb-card:not(.rank-1):not(.rank-2):not(.rank-3) .lb-rank { color: var(--muted); font-size: 16px; }
+    .lb-avatar {
+      width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+      overflow: hidden; border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: #fff;
+    }
+    .lb-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .lb-avatar-placeholder { background: linear-gradient(135deg, var(--accent) 0%, #00bfff 100%); }
+    .rank-1 .lb-avatar { border-color: var(--gold); box-shadow: 0 0 12px rgba(255,215,0,.4); }
+    .rank-2 .lb-avatar { border-color: var(--silver); }
+    .rank-3 .lb-avatar { border-color: var(--bronze); }
+    .lb-info { flex: 1; }
+    .lb-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; color: var(--text); }
+    .lb-detail { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 1px; color: var(--muted); margin-top: 2px; }
+    .lb-amount { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--accent); text-align: right; }
+    .rank-1 .lb-amount { color: var(--gold); }
+    .rank-2 .lb-amount { color: var(--silver); }
+    .rank-3 .lb-amount { color: var(--bronze); }
+    .lb-bar-wrap { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: rgba(145,70,255,.08); }
+    .lb-bar { height: 100%; background: var(--accent); border-radius: 0 2px 2px 0; }
+    .rank-1 .lb-bar { background: var(--gold); }
+    .rank-2 .lb-bar { background: var(--silver); }
+    .rank-3 .lb-bar { background: var(--bronze); }
+    .lb-edit-note {
+      margin-top: 16px; background: var(--bg4); border: 1px solid var(--border); border-radius: 8px;
+      padding: 14px 18px; font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      letter-spacing: 1px; color: var(--muted); display: flex; align-items: center; gap: 10px;
+    }
+    .lb-edit-note span { color: var(--accent); }
+
+    /* ── DROPDOWN ── */
+    .nav-dropdown { position: relative; }
+    .nav-dropdown > a { cursor: pointer; }
+    .dropdown-menu {
+      position: absolute; top: 100%; left: 50%;
+      padding-top: 14px; /* невидимий міст між кнопкою і меню */
+      transform: translateX(-50%);
+      opacity: 0; pointer-events: none;
+      transition: opacity .2s, transform .2s;
+      z-index: 500;
+    }
+    .dropdown-menu-inner {
+      background: rgba(7,7,15,.98); border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 0; min-width: 170px;
+      backdrop-filter: blur(14px);
+      transform: translateY(-6px); transition: transform .2s;
+    }
+    .nav-dropdown:hover .dropdown-menu {
+      opacity: 1; pointer-events: all;
+    }
+    .nav-dropdown:hover .dropdown-menu-inner {
+      transform: translateY(0);
+    }
+    .dropdown-menu a {
+      display: block; padding: 10px 18px;
+      font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--muted); text-decoration: none; border-bottom: none !important;
+      transition: color .15s, background .15s; white-space: nowrap;
+    }
+    .dropdown-menu a:hover { color: var(--text); background: rgba(145,70,255,.08); }
+    .dropdown-menu a.active { color: var(--accent); }
+    .nav-dropdown > a.dropdown-active { color: var(--accent); border-bottom-color: var(--accent) !important; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">sun<span>69</span>wukong</a>
+  <div class="nav-links">
+    <a href="index.html">Головна</a>
+    <a href="about.html">Про мене</a>
+    <a href="stream.html">Стрім</a>
+    <a href="games.html">Ігри</a>
+    <div class="nav-dropdown">
+      <a class="dropdown-active">Інше ▾</a>
+      <div class="dropdown-menu">
+        <div class="dropdown-menu-inner">
+          <a href="scripts.html">Мої скрипти</a>
+          <a href="links.html">Посилання</a>
+          <a href="schedule.html">Розклад</a>
+          <a href="donators.html" class="active">Топ донатери</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="burger" id="burger" aria-label="Меню">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">Головна</a>
+  <a href="about.html">Про мене</a>
+  <a href="stream.html">Стрім</a>
+  <a href="games.html">Ігри</a>
+  <a href="scripts.html">Мої скрипти</a>
+  <a href="links.html">Посилання</a>
+  <a href="schedule.html">Розклад</a>
+  <a href="donators.html" class="active">Топ донатери</a>
+</div>
+
+<div class="page">
+  <p class="section-label">// лідерборд</p>
+  <h1 class="section-title">ТОП ДОНАТЕРИ</h1>
+  <div class="leaderboard" id="leaderboard"></div>
+  <div class="lb-edit-note">
+    <span>✏️</span>
+    Щоб оновити список — відредагуй масив <code style="color:var(--accent)">DONATORS</code> в коді цієї сторінки
+  </div>
+</div>
+<footer>❤️ © 24.04.2026 <strong>sun69wukong</strong> ❤️</footer>
+<script>
+  // ════════════════════════════════════════
+  // ТОП ДОНАТЕРИ — заповни сам!
+  // name:   нік глядача
+  // amount: сума в гривнях (число)
+  // label:  підпис (необов'язково, можна '')
+  // img:    посилання на аватарку (необов'язково, можна '')
+  //
+  // Приклад:
+  // { name: 'Vasyl', amount: 1500, label: 'Легенда', img: 'https://...' },
+  // ════════════════════════════════════════
+  const DONATORS = [
+    // { name: '', amount: 0, label: '', img: '' },
+  ];
+
+  const rankClass = ['rank-1','rank-2','rank-3'];
+  const rankLabel = ['#1','#2','#3'];
+  const lb = document.getElementById('leaderboard');
+
+  if (DONATORS.length === 0) {
+    lb.innerHTML = `<div style="text-align:center;padding:40px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)">// список поки порожній — заповни масив DONATORS</div>`;
+  } else {
+    const maxAmount = DONATORS[0].amount || 1;
+    DONATORS.forEach((d, i) => {
+      const rank = i + 1;
+      const pct = Math.round((d.amount / maxAmount) * 100);
+      const card = document.createElement('div');
+      card.className = 'lb-card ' + (rankClass[i] || '');
+      card.innerHTML = `
+        <div class="lb-rank">${rankLabel[i] || rank}</div>
+        <div class="lb-avatar ${d.img ? '' : 'lb-avatar-placeholder'}">
+          ${d.img ? `<img src="${d.img}" alt="${d.name}">` : d.name.charAt(0).toUpperCase()}
+        </div>
+        <div class="lb-info">
+          <div class="lb-name">${d.name}</div>
+          ${d.label ? `<div class="lb-detail">${d.label}</div>` : ''}
+        </div>
+        <div class="lb-amount">${d.amount.toLocaleString('uk-UA')} ₴</div>
+        <div class="lb-bar-wrap"><div class="lb-bar" style="width:${pct}%"></div></div>
+      `;
+      lb.appendChild(card);
+    });
+  }
+  
+  const burger = document.getElementById('burger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  burger.addEventListener('click', () => {
+    burger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+  });
+  mobileMenu.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      burger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+    });
+  });
+
+</script>
+</body>
+</html>

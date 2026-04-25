@@ -82,6 +82,60 @@
 
     footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 28px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 60px; }
     footer strong { color: var(--accent); }
+
+    /* ── BURGER MOBILE MENU ── */
+    .burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; z-index: 300; }
+    .burger span { display: block; width: 24px; height: 2px; background: var(--text); border-radius: 2px; transition: all .3s; }
+    .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .burger.open span:nth-child(2) { opacity: 0; }
+    .burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-menu {
+      display: none; position: fixed; top: 56px; left: 0; right: 0; bottom: 0; z-index: 150;
+      background: rgba(7,7,15,.98); backdrop-filter: blur(20px);
+      flex-direction: column; align-items: center; justify-content: center; gap: 32px;
+      border-top: 1px solid var(--border);
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 4px; color: var(--muted); text-decoration: none; transition: color .2s; }
+    .mobile-menu a:hover, .mobile-menu a.active { color: var(--accent); }
+    @media(max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .burger { display: flex; }
+    }
+
+    /* ── DROPDOWN ── */
+    .nav-dropdown { position: relative; }
+    .nav-dropdown > a { cursor: pointer; }
+    .dropdown-menu {
+      position: absolute; top: 100%; left: 50%;
+      padding-top: 14px; /* невидимий міст між кнопкою і меню */
+      transform: translateX(-50%);
+      opacity: 0; pointer-events: none;
+      transition: opacity .2s, transform .2s;
+      z-index: 500;
+    }
+    .dropdown-menu-inner {
+      background: rgba(7,7,15,.98); border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 0; min-width: 170px;
+      backdrop-filter: blur(14px);
+      transform: translateY(-6px); transition: transform .2s;
+    }
+    .nav-dropdown:hover .dropdown-menu {
+      opacity: 1; pointer-events: all;
+    }
+    .nav-dropdown:hover .dropdown-menu-inner {
+      transform: translateY(0);
+    }
+    .dropdown-menu a {
+      display: block; padding: 10px 18px;
+      font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--muted); text-decoration: none; border-bottom: none !important;
+      transition: color .15s, background .15s; white-space: nowrap;
+    }
+    .dropdown-menu a:hover { color: var(--text); background: rgba(145,70,255,.08); }
+    .dropdown-menu a.active { color: var(--accent); }
+    .nav-dropdown > a.dropdown-active { color: var(--accent); border-bottom-color: var(--accent) !important; }
   </style>
 </head>
 <body>
@@ -93,10 +147,32 @@
     <a href="about.html">Про мене</a>
     <a href="stream.html">Стрім</a>
     <a href="games.html">Ігри</a>
-    <a href="scripts.html" class="active">Мої скрипти</a>
-    <a href="links.html">Посилання</a>
+    <div class="nav-dropdown">
+      <a class="dropdown-active">Інше ▾</a>
+      <div class="dropdown-menu">
+        <div class="dropdown-menu-inner">
+          <a href="scripts.html" class="active">Мої скрипти</a>
+          <a href="links.html">Посилання</a>
+          <a href="schedule.html">Розклад</a>
+          <a href="donators.html">Топ донатери</a>
+        </div>
+      </div>
+    </div>
   </div>
+  <button class="burger" id="burger" aria-label="Меню">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">Головна</a>
+  <a href="about.html">Про мене</a>
+  <a href="stream.html">Стрім</a>
+  <a href="games.html">Ігри</a>
+  <a href="scripts.html" class="active">Мої скрипти</a>
+  <a href="links.html">Посилання</a>
+  <a href="schedule.html">Розклад</a>
+  <a href="donators.html">Топ донатери</a>
+</div>
 
 <div class="page">
   <p class="section-label">// скрипти</p>
@@ -183,5 +259,23 @@
     </div>
   `).join('');
 </script>
+
+<script>
+  const _burger = document.getElementById('burger');
+  const _mobileMenu = document.getElementById('mobileMenu');
+  if (_burger && _mobileMenu) {
+    _burger.addEventListener('click', () => {
+      _burger.classList.toggle('open');
+      _mobileMenu.classList.toggle('open');
+    });
+    _mobileMenu.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        _burger.classList.remove('open');
+        _mobileMenu.classList.remove('open');
+      });
+    });
+  }
+</script>
+
 </body>
 </html>
