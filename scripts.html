@@ -48,6 +48,14 @@
       background: var(--bg3);
     }
 
+    /* ── емодзі-заглушка ── */
+    .script-card-emoji {
+      width: 100%; aspect-ratio: 16/9;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg3);
+      font-size: 52px;
+    }
+
     .script-card-body {
       padding: 14px 16px 16px;
       display: flex; flex-direction: column; gap: 10px; flex: 1;
@@ -59,7 +67,6 @@
 
     .script-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; color: var(--text); }
 
-    /* ── опис ── */
     .script-desc {
       font-family: 'Rajdhani', sans-serif;
       font-size: 13px;
@@ -109,7 +116,7 @@
     .nav-dropdown > a { cursor: pointer; }
     .dropdown-menu {
       position: absolute; top: 100%; left: 50%;
-      padding-top: 14px; /* невидимий міст між кнопкою і меню */
+      padding-top: 14px;
       transform: translateX(-50%);
       opacity: 0; pointer-events: none;
       transition: opacity .2s, transform .2s;
@@ -147,13 +154,10 @@
       nav { padding:0 14px; }
       footer { padding:18px 14px; }
     }
-
-
     @media(max-width:380px){
       .mobile-menu a { font-size:26px; letter-spacing:2px; }
       .mobile-menu { gap:20px; }
     }
-
   </style>
 </head>
 <body>
@@ -214,58 +218,47 @@
       url:  "https://drive.usercontent.google.com/download?id=1XqMbLJizgidnrT9vkhah6eZ8H-ii2HYg&export=download&authuser=0"
     },
 
-     
     {
-       name: "Всі алерти в одному",
-     desc: "Дозволяє робити всі алерти в одному скрипті і сповіщувати в обс студіо",
-       img:  "https://media.discordapp.net/attachments/1493233309197799425/1497179922676846672/image.png?ex=69ec94f5&is=69eb4375&hm=a37007b3532d1031fbdf48b701f38310f53fe7dda35b3cbf9c3d061ed4ab8df6&=&format=webp&quality=lossless",
-     url:  "https://drive.usercontent.google.com/download?id=1iF5K7SyknIS-ZERPHGmQcrinrgG2ThcF&export=download&authuser=0"
+      name: "Всі алерти в одному",
+      desc: "Дозволяє робити всі алерти в одному скрипті і сповіщувати в обс студіо",
+      img:  "https://media.discordapp.net/attachments/1493233309197799425/1497179922676846672/image.png?ex=69ec94f5&is=69eb4375&hm=a37007b3532d1031fbdf48b701f38310f53fe7dda35b3cbf9c3d061ed4ab8df6&=&format=webp&quality=lossless",
+      url:  "https://drive.usercontent.google.com/download?id=1iF5K7SyknIS-ZERPHGmQcrinrgG2ThcF&export=download&authuser=0"
     },
 
-  {
-     name: "BanMax",
-     desc: "Блокує будь який сайт який вказаний в розширенні.",
+    {
+      name: "BanMax",
+      desc: "Блокує будь який сайт який вказаний в розширенні.",
       img:  "https://store-images.s-microsoft.com/image/apps.31757.4afafa17-ff84-41b4-89d5-6315b95b8fe9.8a6f95ce-76a3-4527-a2e4-0523aeb1f22a.aaee099d-a09a-4793-8341-3d12e84362aa?mode=scale&h=100&q=90&w=100",
-       url:  "https://microsoftedge.microsoft.com/addons/detail/banmax/pcmldmdhlebmpggcganlnjmlkkfmdhjn"
-       
+      url:  "https://microsoftedge.microsoft.com/addons/detail/banmax/pcmldmdhlebmpggcganlnjmlkkfmdhjn"
     },
 
-
-     {
+    {
       name: "Clip",
       desc: "Створіть кліп за допомогою Stremerbot лиш вівши !clip name",
-       img:  "https://media.discordapp.net/attachments/1249396967537250446/1497504042287366174/image.png?ex=69edc2d1&is=69ec7151&hm=39e43ace338f36575608b682091316ddd15cb0d8c7f035c7577e6efac5146d95&=&format=webp&quality=lossless",
-       url:  "https://drive.usercontent.google.com/download?id=1MJavd6CrPYooDmwwfQtme6ulDAYfY4xI&export=download&authuser=0&confirm=t&uuid=c9ae5dad-2fdc-4965-a1e0-990a302227d8&at=ALBwUgn9FCM7o0udsR24U25rt533:1777103091017"
-     },
-
-    {
-       name: "ЗМІНА КАТЕГОРІЇ",
-      desc: "Зміна категорії і зміна сцени і назву стірма за доп AI",
-     img:  "https://media.discordapp.net/attachments/1249396967537250446/1497505083238125598/image.png?ex=69edc3ca&is=69ec724a&hm=bdaded8ab38ac67baa254895c59416c56340043a7c00ec8d0639c0eb1d658840&=&format=webp&quality=lossless",
-       url:  "https://drive.usercontent.google.com/download?id=1egfqGhPjiPnHIUOlgCC6f092e7Kx1KCp&export=download&authuser=0&confirm=t&uuid=4eebe9f2-d7b2-4cb7-85e2-30cb0eb67777&at=ALBwUgkD7SwlemHEzWzDqotrIQwp:1777103327582"
-     },
-
- // Приклад з описом:
-     {
-     name: "Poll",
-       desc: "Відкриває меню poll і можна через інтерфейс швидко робити poll",
-      // img:  "https://...",
-       url:  "https://drive.usercontent.google.com/download?id=1or1FdtIB3umZ06iepqDB8d0VcF4fmHKM&export=download&authuser=0&confirm=t&uuid=bff5bac1-1313-423f-96a3-0bd5ae08b210&at=ALBwUgkpUEosuW4vPt64YjgaJ9rR:1777232052911"
+      img:  "https://media.discordapp.net/attachments/1249396967537250446/1497504042287366174/image.png?ex=69edc2d1&is=69ec7151&hm=39e43ace338f36575608b682091316ddd15cb0d8c7f035c7577e6efac5146d95&=&format=webp&quality=lossless",
+      url:  "https://drive.usercontent.google.com/download?id=1MJavd6CrPYooDmwwfQtme6ulDAYfY4xI&export=download&authuser=0&confirm=t&uuid=c9ae5dad-2fdc-4965-a1e0-990a302227d8&at=ALBwUgn9FCM7o0udsR24U25rt533:1777103091017"
     },
 
-      // Приклад з описом:
-    // {
-    //   name: "Назва скрипта",
-    //   desc: "Тут пишеш що робить цей скрипт — коротко і зрозуміло.",
-    //   img:  "https://...",
-    //   url:  "https://drive.usercontent.google.com/download?id=XXXXXXX&export=download&confirm=t"
-    // },
+    {
+      name: "ЗМІНА КАТЕГОРІЇ",
+      desc: "Зміна категорії і зміна сцени і назву стірма за доп AI",
+      img:  "https://media.discordapp.net/attachments/1249396967537250446/1497505083238125598/image.png?ex=69edc3ca&is=69ec724a&hm=bdaded8ab38ac67baa254895c59416c56340043a7c00ec8d0639c0eb1d658840&=&format=webp&quality=lossless",
+      url:  "https://drive.usercontent.google.com/download?id=1egfqGhPjiPnHIUOlgCC6f092e7Kx1KCp&export=download&authuser=0&confirm=t&uuid=4eebe9f2-d7b2-4cb7-85e2-30cb0eb67777&at=ALBwUgkD7SwlemHEzWzDqotrIQwp:1777103327582"
+    },
 
-      // Приклад з описом:
+    {
+      name: "Poll",
+      desc: "Відкриває меню poll і можна через інтерфейс швидко робити poll",
+      emoji: "📊",   // ← немає img, тому буде показано емодзі
+      url:  "https://drive.usercontent.google.com/download?id=1or1FdtIB3umZ06iepqDB8d0VcF4fmHKM&export=download&authuser=0&confirm=t&uuid=bff5bac1-1313-423f-96a3-0bd5ae08b210&at=ALBwUgkpUEosuW4vPt64YjgaJ9rR:1777232052911"
+    },
+
+    // Приклад як додавати нові скрипти:
     // {
     //   name: "Назва скрипта",
     //   desc: "Тут пишеш що робить цей скрипт — коротко і зрозуміло.",
-    //   img:  "https://...",
+    //   img:  "https://...",        ← або прибери рядок і вкажи emoji нижче
+    //   emoji: "🔧",               ← показується якщо немає img
     //   url:  "https://drive.usercontent.google.com/download?id=XXXXXXX&export=download&confirm=t"
     // },
 
@@ -274,7 +267,10 @@
 
   document.getElementById('scripts-container').innerHTML = SCRIPTS.map(s => `
     <div class="script-card">
-      <img src="${s.img}" alt="${s.name}">
+      ${s.img
+        ? `<img src="${s.img}" alt="${s.name}">`
+        : `<div class="script-card-emoji">${s.emoji || '📜'}</div>`
+      }
       <div class="script-card-body">
         <div class="script-card-header">
           <div class="script-name">${s.name}</div>
