@@ -302,7 +302,7 @@
   // РОЗКЛАД
   // ════════════════════════════════════════
   const SCHEDULE = [
-    { day: 'Пн',  stream: true,  time: '16:13', note: 'PRAGMATA',                  img: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3357650/e32e168b25ed68a0cf6264c220c07e96c2abfb56/header.jpg?t=1777005719' },
+    { day: 'Пн',  stream: true,  time: '16:00', note: 'PRAGMATA',                  img: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3357650/e32e168b25ed68a0cf6264c220c07e96c2abfb56/header.jpg?t=1777005719' },
     { day: 'Вт',  stream: true,  time: '16:00', note: 'PRAGMATA',                  img: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3357650/e32e168b25ed68a0cf6264c220c07e96c2abfb56/header.jpg?t=1777005719' },
     { day: 'Ср',  stream: true,  time: '16:00', note: 'PRAGMATA',                  img: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3357650/e32e168b25ed68a0cf6264c220c07e96c2abfb56/header.jpg?t=1777005719' },
     { day: 'Чт',  stream: true,  time: '16:00', note: 'PRAGMATA',                  img: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3357650/e32e168b25ed68a0cf6264c220c07e96c2abfb56/header.jpg?t=1777005719' },
@@ -409,10 +409,9 @@
     if (enabled) {
       localStorage.setItem(LS_KEY, '0');
       stopChecker();
-      // Повідомити SW що відписались
       if ('serviceWorker' in navigator) {
-        const reg = await navigator.serviceWorker.ready.catch(() => null);
-        if (reg) reg.active?.postMessage({ type: 'UNSUBSCRIBE' });
+        const swReg = await navigator.serviceWorker.ready.catch(() => null);
+        if (swReg) swReg.active?.postMessage({ type: 'UNSUBSCRIBE' });
       }
       syncUI();
       return;
@@ -421,19 +420,16 @@
     const perm = await Notification.requestPermission();
     if (perm === 'granted') {
       localStorage.setItem(LS_KEY, '1');
-      await registerSW();
+      const swReg = await registerSW(); // registerSW вже передає SET_SCHEDULE
       syncUI();
-      // тестовий пуш
-      if ('serviceWorker' in navigator) {
-        const reg = await navigator.serviceWorker.ready.catch(() => null);
-        if (reg) {
-          reg.active?.postMessage({ type: 'TEST_NOTIF' });
-        } else {
-          new Notification('✅ Сповіщення увімкнені!', {
-            body: 'Отримаєш пуш за 15 хв до стріму від sun69wukong',
-            icon: './favicon.ico', tag: 'test-notif'
-          });
-        }
+      // Тестовий пуш
+      if (swReg?.active) {
+        swReg.active.postMessage({ type: 'TEST_NOTIF' });
+      } else {
+        new Notification('✅ Сповіщення увімкнені!', {
+          body: 'Отримаєш пуш за 15 хв до стріму від sun69wukong',
+          icon: './favicon.ico', tag: 'test-notif'
+        });
       }
     } else {
       syncUI();
@@ -443,16 +439,27 @@
   async function registerSW() {
     if (!('serviceWorker' in navigator)) return null;
     try {
-      const reg = await navigator.serviceWorker.register('./sw.js', { scope: './' });
-      console.log('[SW] Registered', reg.scope);
-      // Передати розклад у SW для офлайн перевірки
-      await navigator.serviceWorker.ready;
-      reg.active?.postMessage({
-        type:     'SET_SCHEDULE',
-        schedule: SCHEDULE,
-        lsKey:    LS_KEY
+      await navigator.serviceWorker.register('./sw.js', { scope: './' });
+      console.log('[SW] Registered');
+
+      // .ready гарантує що SW вже у стані ACTIVE (не installing/waiting)
+      const swReg = await navigator.serviceWorker.ready;
+
+      // Передаємо розклад і чекаємо підтвердження через MessageChannel
+      await new Promise((resolve) => {
+        const channel = new MessageChannel();
+        channel.port1.onmessage = (e) => {
+          if (e.data?.type === 'SCHEDULE_OK') resolve();
+        };
+        swReg.active.postMessage(
+          { type: 'SET_SCHEDULE', schedule: SCHEDULE },
+          [channel.port2]
+        );
+        // Таймаут — якщо SW не відповів за 2с, йдемо далі
+        setTimeout(resolve, 2000);
       });
-      return reg;
+
+      return swReg;
     } catch (e) {
       console.warn('[SW] Registration failed:', e);
       return null;
@@ -508,6 +515,9 @@
   // ── Ініціалізація ──
   syncUI();
   if (Notification.permission === 'granted' && localStorage.getItem(LS_KEY) === '1') {
+    // Перереєструємо і передаємо розклад — важливо при перезавантаженні
+    // браузера, бо SW втрачає SCHEDULE з пам'яті (IDB відновить, але краще
+    // передати свіжий з сторінки одразу)
     registerSW();
   }
 
