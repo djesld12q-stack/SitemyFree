@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — sun69wukong</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #9146FF; --bg: #07070f; --bg4: #181830;
+      --text: #eeeef8; --muted: #6e6e90; --border: rgba(145,70,255,.18);
+    }
+    body {
+      font-family: 'Rajdhani', sans-serif; background: var(--bg); color: var(--text);
+      min-height: 100vh; overflow: hidden; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+    }
+
+    /* Grid background */
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(145,70,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(145,70,255,.04) 1px, transparent 1px);
+      background-size: 44px 44px; pointer-events: none; z-index: 0;
+    }
+
+    /* Glowing orb */
+    .glow {
+      position: fixed; width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(145,70,255,.14) 0%, transparent 65%);
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      pointer-events: none; z-index: 0;
+      animation: breathe 4s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%,100% { transform: translate(-50%,-50%) scale(1); opacity: .7; }
+      50%      { transform: translate(-50%,-50%) scale(1.25); opacity: 1; }
+    }
+
+    /* Scanline effect */
+    body::after {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,.03) 2px,
+        rgba(0,0,0,.03) 4px
+      );
+    }
+
+    .container { position: relative; z-index: 1; padding: 24px; max-width: 600px; }
+
+    /* Big 404 */
+    .code-wrap { position: relative; margin-bottom: 16px; display: inline-block; }
+    .code-404 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(120px, 22vw, 200px);
+      letter-spacing: 8px; line-height: .9;
+      color: transparent;
+      -webkit-text-stroke: 2px rgba(145,70,255,.25);
+      user-select: none;
+      position: relative;
+    }
+    .code-404::before {
+      content: '404';
+      position: absolute; inset: 0;
+      color: var(--accent);
+      -webkit-text-stroke: 0;
+      opacity: 0;
+      animation: glitch-reveal 6s ease-in-out infinite;
+      clip-path: polygon(0 30%, 100% 30%, 100% 60%, 0 60%);
+      text-shadow: 2px 0 0 rgba(0,245,255,.6), -2px 0 0 rgba(255,0,128,.4);
+    }
+    .code-404::after {
+      content: '404';
+      position: absolute; inset: 0;
+      color: var(--accent);
+      -webkit-text-stroke: 0;
+      text-shadow: 0 0 60px rgba(145,70,255,.8);
+      animation: flicker 3s ease-in-out infinite;
+    }
+    @keyframes glitch-reveal {
+      0%,40%,60%,100% { opacity: 0; transform: translate(0); }
+      42% { opacity: 1; transform: translate(-4px, 1px); }
+      44% { opacity: 1; transform: translate(4px, -1px); }
+      46%,58% { opacity: 0; }
+    }
+    @keyframes flicker {
+      0%,100% { opacity: 1; }
+      92% { opacity: 1; }
+      93% { opacity: .4; }
+      94% { opacity: 1; }
+      96% { opacity: .6; }
+      97% { opacity: 1; }
+    }
+
+    /* Label above */
+    .sys-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; letter-spacing: 3px; color: var(--accent);
+      margin-bottom: 8px; display: block;
+    }
+
+    /* Title */
+    .title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(22px, 5vw, 34px); letter-spacing: 5px;
+      margin-bottom: 12px;
+    }
+
+    /* Description */
+    .desc {
+      font-size: 15px; font-weight: 600; color: var(--muted);
+      line-height: 1.65; margin-bottom: 36px;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px;
+    }
+    .desc .acc { color: var(--accent); }
+
+    /* Terminal-style error block */
+    .terminal {
+      background: var(--bg4); border: 1px solid var(--border); border-radius: 8px;
+      padding: 14px 20px; margin-bottom: 32px; text-align: left;
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1px;
+      color: var(--muted);
+    }
+    .terminal .t-line { display: flex; gap: 10px; line-height: 1.9; }
+    .terminal .t-prompt { color: rgba(145,70,255,.5); }
+    .terminal .t-err { color: #ff4444; }
+    .terminal .t-ok  { color: #00c864; }
+    .terminal .cursor {
+      display: inline-block; width: 7px; height: 12px; background: var(--accent);
+      margin-left: 4px; vertical-align: middle;
+      animation: cur 1s step-end infinite;
+    }
+    @keyframes cur { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* Buttons */
+    .btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    .btn-home {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 30px; background: var(--accent); color: #fff;
+      font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px;
+      border: none; border-radius: 3px; cursor: pointer; text-decoration: none;
+      box-shadow: 0 0 28px rgba(145,70,255,.45);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn-home:hover { transform: translateY(-3px); box-shadow: 0 10px 40px rgba(145,70,255,.6); }
+    .btn-back {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 30px; background: transparent;
+      border: 1px solid var(--border); color: var(--muted);
+      font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px;
+      border-radius: 3px; cursor: pointer; text-decoration: none;
+      transition: all .2s;
+    }
+    .btn-back:hover { border-color: rgba(145,70,255,.4); color: var(--text); transform: translateY(-3px); }
+
+    /* Floating particles */
+    .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .p { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: var(--accent); opacity: 0; animation: float linear infinite; }
+    @keyframes float {
+      0%   { transform: translateY(100vh) translateX(0); opacity: 0; }
+      10%  { opacity: .6; }
+      90%  { opacity: .3; }
+      100% { transform: translateY(-10vh) translateX(40px); opacity: 0; }
+    }
+
+    @media(max-width:480px) {
+      .btns { flex-direction: column; align-items: stretch; }
+      .btn-home, .btn-back { justify-content: center; }
+      .terminal { padding: 12px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="glow"></div>
+
+<!-- Particles -->
+<div class="particles" id="particles"></div>
+
+<div class="container">
+  <span class="sys-label">// system error</span>
+
+  <div class="code-wrap">
+    <div class="code-404">404</div>
+  </div>
+
+  <div class="title">СТОРІНКУ НЕ ЗНАЙДЕНО</div>
+
+  <p class="desc">
+    Схоже, ти потрапив не туди.<br>
+    Ця сторінка <span class="acc">не існує</span> або була переміщена.
+  </p>
+
+  <div class="terminal">
+    <div class="t-line"><span class="t-prompt">$</span> <span>GET /???</span></div>
+    <div class="t-line"><span class="t-prompt">→</span> <span class="t-err">ERROR 404 — Not Found</span></div>
+    <div class="t-line"><span class="t-prompt">→</span> <span>Redirecting to safety...</span></div>
+    <div class="t-line"><span class="t-prompt">$</span> <span class="t-ok">sun69wukong.exe</span><span class="cursor"></span></div>
+  </div>
+
+  <div class="btns">
+    <a href="/sunwukong/" class="btn-home">
+      ← ГОЛОВНА
+    </a>
+    <a href="javascript:history.back()" class="btn-back">
+      ↩ НАЗАД
+    </a>
+  </div>
+</div>
+
+<script>
+  // Spawn particles
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'p';
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.animationDuration = (6 + Math.random() * 10) + 's';
+    p.style.animationDelay = (Math.random() * 8) + 's';
+    p.style.width = p.style.height = (1 + Math.random() * 3) + 'px';
+    p.style.opacity = 0;
+    container.appendChild(p);
+  }
+</script>
+</body>
+</html>
