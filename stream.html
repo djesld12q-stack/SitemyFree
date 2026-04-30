@@ -13,13 +13,13 @@
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.init({
-        appId: "7220ab48-9fb2-4ea5-b88e-150ee072c6c6",   // ← ЗАМІН ЦЕ
-        notifyButton: { enable: false },   // вимикаємо дефолтну кнопку (маємо свою)
-        allowLocalhostAsSecureOrigin: true,
-        serviceWorkerPath: "OneSignalSDKWorker.js",
-      });
-
+    await OneSignal.init({
+  appId: "7220ab48-9fb2-4ea5-b88e-150ee072c6c6",
+  notifyButton: { enable: false },
+  allowLocalhostAsSecureOrigin: true,
+  serviceWorkerPath: "/sunwukong/OneSignalSDKWorker.js",
+  serviceWorkerParam: { scope: "/sunwukong/" },
+});
       // Синхронізуємо стан кнопки після ініціалізації
       const isSubscribed = await OneSignal.User.PushSubscription.optedIn;
       updateNotifyBtn(isSubscribed);
