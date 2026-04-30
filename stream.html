@@ -7,70 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-  <!-- ══ OneSignal Web Push SDK ══ -->
-  <!-- ЗАМІН YOUR_ONESIGNAL_APP_ID на свій App ID з OneSignal Dashboard -->
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-  <script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-  appId: "7220ab48-9fb2-4ea5-b88e-150ee072c6c6",
-  notifyButton: { enable: false },
-  allowLocalhostAsSecureOrigin: true,
-  serviceWorkerPath: "/sunwukong/OneSignalSDKWorker.js",
-  serviceWorkerParam: { scope: "/sunwukong/" },
-});
-      // Синхронізуємо стан кнопки після ініціалізації
-      const isSubscribed = await OneSignal.User.PushSubscription.optedIn;
-      updateNotifyBtn(isSubscribed);
-
-      // Слухаємо зміни підписки
-      OneSignal.User.PushSubscription.addEventListener('change', (e) => {
-        updateNotifyBtn(e.current.optedIn);
-      });
-    });
-
-    function updateNotifyBtn(subscribed) {
-      const btn  = document.getElementById('notifyBtn');
-      const txt  = document.getElementById('notifyTxt');
-      const icon = document.getElementById('notifyIcon');
-      if (!btn) return;
-      if (subscribed) {
-        btn.classList.add('subscribed');
-        txt.textContent = 'Сповіщення увімкнено';
-        icon.innerHTML = bellOnSVG();
-      } else {
-        btn.classList.remove('subscribed');
-        txt.textContent = 'Сповістити про стрім';
-        icon.innerHTML = bellOffSVG();
-      }
-    }
-
-    function bellOffSVG() {
-      return `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-      </svg>`;
-    }
-    function bellOnSVG() {
-      return `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-        <circle cx="18" cy="5" r="4" fill="#4ade80" stroke="#07070f" stroke-width="1.5"/>
-      </svg>`;
-    }
-
-    async function toggleNotification() {
-      if (typeof OneSignal === 'undefined') return;
-      const isSubscribed = await OneSignal.User.PushSubscription.optedIn;
-      if (isSubscribed) {
-        await OneSignal.User.PushSubscription.optOut();
-      } else {
-        await OneSignal.User.PushSubscription.optIn();
-      }
-    }
-  </script>
-
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -111,51 +47,6 @@
     .stream-ftr { display: flex; align-items: center; justify-content: space-between; padding: 12px 22px; gap: 12px; flex-wrap: wrap; }
     .tw-link { display: inline-flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); text-decoration: none; letter-spacing: 1px; transition: opacity .2s; }
     .tw-link:hover { opacity: .7; }
-
-    /* ══ NOTIFY BUTTON ══ */
-    .notify-btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
-      letter-spacing: 1.5px; text-transform: uppercase;
-      padding: 7px 14px; border-radius: 6px; cursor: pointer;
-      border: 1px solid var(--border); background: var(--bg3); color: var(--muted);
-      transition: all .22s; white-space: nowrap; user-select: none;
-    }
-    .notify-btn:hover {
-      border-color: rgba(145,70,255,.6);
-      color: var(--accent);
-      background: rgba(145,70,255,.08);
-      box-shadow: 0 0 14px rgba(145,70,255,.18);
-    }
-    .notify-btn.subscribed {
-      border-color: rgba(145,70,255,.55);
-      color: var(--accent);
-      background: rgba(145,70,255,.1);
-    }
-    .notify-btn.subscribed:hover {
-      background: rgba(145,70,255,.18);
-      border-color: var(--accent);
-    }
-    /* pulse animation when newly subscribed */
-    @keyframes btnPulse {
-      0%   { box-shadow: 0 0 0 0 rgba(145,70,255,.5); }
-      70%  { box-shadow: 0 0 0 10px rgba(145,70,255,0); }
-      100% { box-shadow: 0 0 0 0 rgba(145,70,255,0); }
-    }
-    .notify-btn.pulse { animation: btnPulse .6s ease-out; }
-
-    /* ══ TOAST ══ */
-    .notify-toast {
-      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);
-      z-index: 9999; background: var(--bg3); border: 1px solid rgba(145,70,255,.4);
-      border-radius: 8px; padding: 12px 20px; display: flex; align-items: center; gap: 10px;
-      font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text);
-      box-shadow: 0 8px 32px rgba(0,0,0,.6); transition: transform .35s cubic-bezier(.4,0,.2,1), opacity .35s;
-      opacity: 0; pointer-events: none; white-space: nowrap;
-    }
-    .notify-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: all; }
-    .notify-toast-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; flex-shrink: 0; }
-    .notify-toast-dot.off { background: var(--muted); }
 
     /* CAROUSEL */
     .carousel-section { margin-top: 52px; }
@@ -287,12 +178,6 @@
 </head>
 <body>
 
-<!-- ── TOAST ── -->
-<div class="notify-toast" id="notifyToast">
-  <div class="notify-toast-dot" id="toastDot"></div>
-  <span id="toastMsg">Сповіщення увімкнено!</span>
-</div>
-
 <nav>
   <a href="index.html" class="nav-logo">sun<span>69</span>wukong</a>
   <div class="nav-links">
@@ -368,18 +253,6 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="#9146FF"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
         Відкрити на Twitch
       </a>
-
-      <!-- ══ КНОПКА СПОВІЩЕНЬ ══ -->
-      <button class="notify-btn" id="notifyBtn" onclick="handleNotifyClick()">
-        <span id="notifyIcon">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-          </svg>
-        </span>
-        <span id="notifyTxt">Сповістити про стрім</span>
-      </button>
-
       <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)">🎮 sun69wukong</span>
     </div>
   </div>
@@ -403,52 +276,6 @@
 </div>
 
 <footer>❤️ © 24.04.2026 <strong>sun69wukong</strong> ❤️</footer>
-
-<!-- ══ NOTIFY BUTTON LOGIC ══ -->
-<script>
-  let _toastTimer;
-
-  function showToast(msg, isOn) {
-    const toast = document.getElementById('notifyToast');
-    const dot   = document.getElementById('toastDot');
-    const txt   = document.getElementById('toastMsg');
-    txt.textContent = msg;
-    dot.className = 'notify-toast-dot' + (isOn ? '' : ' off');
-    toast.classList.add('show');
-    clearTimeout(_toastTimer);
-    _toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
-  }
-
-  async function handleNotifyClick() {
-    if (typeof OneSignal === 'undefined') {
-      showToast('⚠️ Сповіщення недоступні (перевір налаштування)', false);
-      return;
-    }
-    try {
-      const btn = document.getElementById('notifyBtn');
-      const isSubscribed = await OneSignal.User.PushSubscription.optedIn;
-
-      if (isSubscribed) {
-        await OneSignal.User.PushSubscription.optOut();
-        showToast('Сповіщення вимкнено', false);
-      } else {
-        await OneSignal.User.PushSubscription.optIn();
-        // Перевіряємо чи дозволив браузер
-        const nowSubscribed = await OneSignal.User.PushSubscription.optedIn;
-        if (nowSubscribed) {
-          btn.classList.add('pulse');
-          setTimeout(() => btn.classList.remove('pulse'), 700);
-          showToast('🔔 Сповіщення увімкнено! Повідомимо коли стрім почнеться', true);
-        } else {
-          showToast('⚠️ Браузер заблокував сповіщення. Дозволь їх у налаштуваннях сайту', false);
-        }
-      }
-    } catch(e) {
-      console.error('Notify error:', e);
-      showToast('⚠️ Помилка. Спробуй ще раз', false);
-    }
-  }
-</script>
 
 <!-- ══ STREAMERS CAROUSEL ══ -->
 <script>
