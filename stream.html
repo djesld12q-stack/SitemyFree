@@ -6,6 +6,71 @@
   <title>Стрім — sun69wukong</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- ══ OneSignal Web Push SDK ══ -->
+  <!-- ЗАМІН YOUR_ONESIGNAL_APP_ID на свій App ID з OneSignal Dashboard -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "YOUR_ONESIGNAL_APP_ID",   // ← ЗАМІН ЦЕ
+        notifyButton: { enable: false },   // вимикаємо дефолтну кнопку (маємо свою)
+        allowLocalhostAsSecureOrigin: true,
+        serviceWorkerPath: "OneSignalSDKWorker.js",
+      });
+
+      // Синхронізуємо стан кнопки після ініціалізації
+      const isSubscribed = await OneSignal.User.PushSubscription.optedIn;
+      updateNotifyBtn(isSubscribed);
+
+      // Слухаємо зміни підписки
+      OneSignal.User.PushSubscription.addEventListener('change', (e) => {
+        updateNotifyBtn(e.current.optedIn);
+      });
+    });
+
+    function updateNotifyBtn(subscribed) {
+      const btn  = document.getElementById('notifyBtn');
+      const txt  = document.getElementById('notifyTxt');
+      const icon = document.getElementById('notifyIcon');
+      if (!btn) return;
+      if (subscribed) {
+        btn.classList.add('subscribed');
+        txt.textContent = 'Сповіщення увімкнено';
+        icon.innerHTML = bellOnSVG();
+      } else {
+        btn.classList.remove('subscribed');
+        txt.textContent = 'Сповістити про стрім';
+        icon.innerHTML = bellOffSVG();
+      }
+    }
+
+    function bellOffSVG() {
+      return `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>`;
+    }
+    function bellOnSVG() {
+      return `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        <circle cx="18" cy="5" r="4" fill="#4ade80" stroke="#07070f" stroke-width="1.5"/>
+      </svg>`;
+    }
+
+    async function toggleNotification() {
+      if (typeof OneSignal === 'undefined') return;
+      const isSubscribed = await OneSignal.User.PushSubscription.optedIn;
+      if (isSubscribed) {
+        await OneSignal.User.PushSubscription.optOut();
+      } else {
+        await OneSignal.User.PushSubscription.optIn();
+      }
+    }
+  </script>
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -43,9 +108,55 @@
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.1} }
     .stream-ltxt { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 1px; }
     .stream-player { background: #040408; position: relative; width: 100%; aspect-ratio: 16/9; min-height: 240px; }
-    .stream-ftr { display: flex; align-items: center; justify-content: space-between; padding: 12px 22px; }
+    .stream-ftr { display: flex; align-items: center; justify-content: space-between; padding: 12px 22px; gap: 12px; flex-wrap: wrap; }
     .tw-link { display: inline-flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); text-decoration: none; letter-spacing: 1px; transition: opacity .2s; }
     .tw-link:hover { opacity: .7; }
+
+    /* ══ NOTIFY BUTTON ══ */
+    .notify-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 7px 14px; border-radius: 6px; cursor: pointer;
+      border: 1px solid var(--border); background: var(--bg3); color: var(--muted);
+      transition: all .22s; white-space: nowrap; user-select: none;
+    }
+    .notify-btn:hover {
+      border-color: rgba(145,70,255,.6);
+      color: var(--accent);
+      background: rgba(145,70,255,.08);
+      box-shadow: 0 0 14px rgba(145,70,255,.18);
+    }
+    .notify-btn.subscribed {
+      border-color: rgba(145,70,255,.55);
+      color: var(--accent);
+      background: rgba(145,70,255,.1);
+    }
+    .notify-btn.subscribed:hover {
+      background: rgba(145,70,255,.18);
+      border-color: var(--accent);
+    }
+    /* pulse animation when newly subscribed */
+    @keyframes btnPulse {
+      0%   { box-shadow: 0 0 0 0 rgba(145,70,255,.5); }
+      70%  { box-shadow: 0 0 0 10px rgba(145,70,255,0); }
+      100% { box-shadow: 0 0 0 0 rgba(145,70,255,0); }
+    }
+    .notify-btn.pulse { animation: btnPulse .6s ease-out; }
+
+    /* ══ TOAST ══ */
+    .notify-toast {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);
+      z-index: 9999; background: var(--bg3); border: 1px solid rgba(145,70,255,.4);
+      border-radius: 8px; padding: 12px 20px; display: flex; align-items: center; gap: 10px;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text);
+      box-shadow: 0 8px 32px rgba(0,0,0,.6); transition: transform .35s cubic-bezier(.4,0,.2,1), opacity .35s;
+      opacity: 0; pointer-events: none; white-space: nowrap;
+    }
+    .notify-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: all; }
+    .notify-toast-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; flex-shrink: 0; }
+    .notify-toast-dot.off { background: var(--muted); }
+
     /* CAROUSEL */
     .carousel-section { margin-top: 52px; }
     .carousel-section .section-title { font-size: 32px; }
@@ -116,14 +227,13 @@
     .sc-url { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .sc-arrow { flex-shrink: 0; opacity: .3; transition: opacity .2s; }
     .sc-card:hover .sc-arrow { opacity: .8; }
-    @keyframes pulse { from { opacity: .4; } to { opacity: 1; } }
     .carousel-dots { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 16px; }
     .cdot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); opacity: .4; transition: opacity .2s, background .2s, transform .2s; cursor: pointer; }
     .cdot.active { background: var(--accent); opacity: 1; transform: scale(1.4); }
     footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 28px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 60px; }
     footer strong { color: var(--accent); }
 
-    /* ── BURGER MOBILE MENU ── */
+    /* ── BURGER ── */
     .burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; z-index: 300; }
     .burger span { display: block; width: 24px; height: 2px; background: var(--text); border-radius: 2px; transition: all .3s; }
     .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
@@ -138,67 +248,51 @@
     .mobile-menu.open { display: flex; }
     .mobile-menu a { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 4px; color: var(--muted); text-decoration: none; transition: color .2s; }
     .mobile-menu a:hover, .mobile-menu a.active { color: var(--accent); }
-    @media(max-width: 768px) {
-      nav { padding: 0 20px; }
-      .nav-links { display: none; }
-      .burger { display: flex; }
-    }
+    @media(max-width: 768px) { nav { padding: 0 20px; } .nav-links { display: none; } .burger { display: flex; } }
 
     /* ── DROPDOWN ── */
     .nav-dropdown { position: relative; }
     .nav-dropdown > a { cursor: pointer; }
     .dropdown-menu {
-      position: absolute; top: 100%; left: 50%;
-      padding-top: 14px; /* невидимий міст між кнопкою і меню */
-      transform: translateX(-50%);
-      opacity: 0; pointer-events: none;
-      transition: opacity .2s, transform .2s;
-      z-index: 500;
+      position: absolute; top: 100%; left: 50%; padding-top: 14px;
+      transform: translateX(-50%); opacity: 0; pointer-events: none;
+      transition: opacity .2s, transform .2s; z-index: 500;
     }
     .dropdown-menu-inner {
       background: rgba(7,7,15,.98); border: 1px solid var(--border); border-radius: 8px;
-      padding: 8px 0; min-width: 170px;
-      backdrop-filter: blur(14px);
+      padding: 8px 0; min-width: 170px; backdrop-filter: blur(14px);
       transform: translateY(-6px); transition: transform .2s;
     }
-    .nav-dropdown:hover .dropdown-menu {
-      opacity: 1; pointer-events: all;
-    }
-    .nav-dropdown:hover .dropdown-menu-inner {
-      transform: translateY(0);
-    }
+    .nav-dropdown:hover .dropdown-menu { opacity: 1; pointer-events: all; }
+    .nav-dropdown:hover .dropdown-menu-inner { transform: translateY(0); }
     .dropdown-menu a {
-      display: block; padding: 10px 18px;
-      font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-      color: var(--muted); text-decoration: none; border-bottom: none !important;
+      display: block; padding: 10px 18px; font-size: 11px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+      text-decoration: none; border-bottom: none !important;
       transition: color .15s, background .15s; white-space: nowrap;
     }
     .dropdown-menu a:hover { color: var(--text); background: rgba(145,70,255,.08); }
     .dropdown-menu a.active { color: var(--accent); }
     .nav-dropdown > a.dropdown-active { color: var(--accent); border-bottom-color: var(--accent) !important; }
 
-    /* ══════════ MOBILE STREAM ══════════ */
     @media(max-width:600px){
       .stream-hdr { flex-direction:column; align-items:flex-start; gap:10px; padding:12px 16px; }
       .stream-ftr { flex-direction:column; align-items:flex-start; gap:8px; padding:10px 16px; }
       .carousel-btn { width:36px; height:36px; }
       .carousel-outer { margin:0 -4px; }
     }
-    @media(max-width:480px){
-      .page { padding: 76px 14px 40px; }
-      nav { padding:0 14px; }
-      footer { padding:18px 14px; }
-    }
-
-
-    @media(max-width:380px){
-      .mobile-menu a { font-size:26px; letter-spacing:2px; }
-      .mobile-menu { gap:20px; }
-    }
-
+    @media(max-width:480px){ .page { padding: 76px 14px 40px; } nav { padding:0 14px; } footer { padding:18px 14px; } }
+    @media(max-width:380px){ .mobile-menu a { font-size:26px; letter-spacing:2px; } .mobile-menu { gap:20px; } }
   </style>
 </head>
 <body>
+
+<!-- ── TOAST ── -->
+<div class="notify-toast" id="notifyToast">
+  <div class="notify-toast-dot" id="toastDot"></div>
+  <span id="toastMsg">Сповіщення увімкнено!</span>
+</div>
+
 <nav>
   <a href="index.html" class="nav-logo">sun<span>69</span>wukong</a>
   <div class="nav-links">
@@ -223,6 +317,7 @@
     <span></span><span></span><span></span>
   </button>
 </nav>
+
 <div class="mobile-menu" id="mobileMenu">
   <a href="index.html">Головна</a>
   <a href="about.html">Про мене</a>
@@ -256,13 +351,10 @@
     <script>
       (function(){
         var host = window.location.hostname;
-        // Twitch вимагає точний домен — перелічуємо всі можливі
         var parent = (host && host !== 'localhost' && host !== '127.0.0.1')
-          ? host
-          : 'djesld12q-stack.github.io';
+          ? host : 'djesld12q-stack.github.io';
         var wrap = document.getElementById('stream-player-wrap');
         var iframe = document.createElement('iframe');
-        // &parent може містити кілька доменів через кому
         iframe.src = 'https://player.twitch.tv/?channel=sun69wukong&parent=' + parent + '&autoplay=false&muted=false';
         iframe.allowFullscreen = true;
         iframe.allow = 'autoplay; fullscreen';
@@ -276,6 +368,18 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="#9146FF"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
         Відкрити на Twitch
       </a>
+
+      <!-- ══ КНОПКА СПОВІЩЕНЬ ══ -->
+      <button class="notify-btn" id="notifyBtn" onclick="handleNotifyClick()">
+        <span id="notifyIcon">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </span>
+        <span id="notifyTxt">Сповістити про стрім</span>
+      </button>
+
       <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)">🎮 sun69wukong</span>
     </div>
   </div>
@@ -300,83 +404,73 @@
 
 <footer>❤️ © 24.04.2026 <strong>sun69wukong</strong> ❤️</footer>
 
+<!-- ══ NOTIFY BUTTON LOGIC ══ -->
 <script>
-// ════════════════════════════════════════════════
-//  СПИСОК СТРІМЕРІВ — редагуй тільки тут
-//
-//  name   — відображувана назва
-//  url    — посилання на канал (twitch / kick / youtube)
-//  avatar — пряме посилання на аватарку
-//  twitch — twitch login (для превью і LIVE статусу)
-// ════════════════════════════════════════════════
-const STREAMERS = [
-  {
-    name: 'Ong_Ba',
-    url: 'https://www.twitch.tv/ong_ba',
-    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/46e2417a-8fbe-4b8c-ac25-dbfd26060702-profile_image-70x70.png',
-    twitch: 'ong_ba',
-  },
-  {
-    name: '1okisan',
-    url: 'https://www.twitch.tv/1okisan',
-    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/766e5aad-b596-4f8e-bc00-639e1bb640dd-profile_image-70x70.png',
-    twitch: '1okisan',
-  },
-  {
-    name: 'OpenToGame',
-    url: 'https://www.twitch.tv/opentogame',
-    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/4434a2c5-f31e-43e4-b488-f9f585e52a8c-profile_image-70x70.png',
-    twitch: 'opentogame',
-  },
-  {
-    name: 'KaIIiToIIIkA',
-    url: 'https://www.twitch.tv/kaiiitoiiika',
-    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/78498af0-5d61-47a2-a753-3b7dd54f330f-profile_image-70x70.png',
-    twitch: 'kaiiitoiiika',
-  },
-  {
-    name: 'demonicniy_gamer',
-    url: 'https://www.twitch.tv/demonicniy_gamer',
-    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/b0ac17a7-4498-47bf-9534-ec4bb18b3737-profile_image-70x70.png',
-    twitch: 'demonicniy_gamer',
-  },
- {
-    name: 'LAVER_stream',
-    url: 'https://www.twitch.tv/laver_stream',
-    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/49b3b2fd-f465-4843-8703-5df5fa593d34-profile_image-70x70.png',
-    twitch: 'laver_stream',
-  },
- {
-    name: 'n0_s0und5120',
-    url: 'https://www.twitch.tv/n0_s0und5120',
-    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/5ef20d16-3aa0-472a-954e-285fb7eb0988-profile_image-70x70.jpeg',
-    twitch: 'n0_s0und5120',
-  },
-   {
-    name: 'mariana_yuko',
-    url: 'https://www.twitch.tv/mariana_yuko',
-    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/b2d8f48f-08a4-4b6a-8797-9d9fa1f466ae-profile_image-70x70.jpeg',
-    twitch: 'mariana_yuko',
-  },
-  {
-    name: 'ukrainian_npc',
-    url: 'https://www.twitch.tv/ukrainian_npc',
-    avatar: 'https://static-cdn.jtvnw.net/jtv_user_pictures/d1f42b50-4493-4096-9f66-2dc015a0ae77-profile_image-70x70.png',
-    twitch: 'ukrainian_npc',
-  },
+  let _toastTimer;
 
+  function showToast(msg, isOn) {
+    const toast = document.getElementById('notifyToast');
+    const dot   = document.getElementById('toastDot');
+    const txt   = document.getElementById('toastMsg');
+    txt.textContent = msg;
+    dot.className = 'notify-toast-dot' + (isOn ? '' : ' off');
+    toast.classList.add('show');
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+  }
+
+  async function handleNotifyClick() {
+    if (typeof OneSignal === 'undefined') {
+      showToast('⚠️ Сповіщення недоступні (перевір налаштування)', false);
+      return;
+    }
+    try {
+      const btn = document.getElementById('notifyBtn');
+      const isSubscribed = await OneSignal.User.PushSubscription.optedIn;
+
+      if (isSubscribed) {
+        await OneSignal.User.PushSubscription.optOut();
+        showToast('Сповіщення вимкнено', false);
+      } else {
+        await OneSignal.User.PushSubscription.optIn();
+        // Перевіряємо чи дозволив браузер
+        const nowSubscribed = await OneSignal.User.PushSubscription.optedIn;
+        if (nowSubscribed) {
+          btn.classList.add('pulse');
+          setTimeout(() => btn.classList.remove('pulse'), 700);
+          showToast('🔔 Сповіщення увімкнено! Повідомимо коли стрім почнеться', true);
+        } else {
+          showToast('⚠️ Браузер заблокував сповіщення. Дозволь їх у налаштуваннях сайту', false);
+        }
+      }
+    } catch(e) {
+      console.error('Notify error:', e);
+      showToast('⚠️ Помилка. Спробуй ще раз', false);
+    }
+  }
+</script>
+
+<!-- ══ STREAMERS CAROUSEL ══ -->
+<script>
+const STREAMERS = [
+  { name:'Ong_Ba',           url:'https://www.twitch.tv/ong_ba',           avatar:'https://static-cdn.jtvnw.net/jtv_user_pictures/46e2417a-8fbe-4b8c-ac25-dbfd26060702-profile_image-70x70.png', twitch:'ong_ba' },
+  { name:'1okisan',          url:'https://www.twitch.tv/1okisan',          avatar:'https://static-cdn.jtvnw.net/jtv_user_pictures/766e5aad-b596-4f8e-bc00-639e1bb640dd-profile_image-70x70.png', twitch:'1okisan' },
+  { name:'OpenToGame',       url:'https://www.twitch.tv/opentogame',       avatar:'https://static-cdn.jtvnw.net/jtv_user_pictures/4434a2c5-f31e-43e4-b488-f9f585e52a8c-profile_image-70x70.png', twitch:'opentogame' },
+  { name:'KaIIiToIIIkA',    url:'https://www.twitch.tv/kaiiitoiiika',     avatar:'https://static-cdn.jtvnw.net/jtv_user_pictures/78498af0-5d61-47a2-a753-3b7dd54f330f-profile_image-70x70.png', twitch:'kaiiitoiiika' },
+  { name:'demonicniy_gamer', url:'https://www.twitch.tv/demonicniy_gamer', avatar:'https://static-cdn.jtvnw.net/jtv_user_pictures/b0ac17a7-4498-47bf-9534-ec4bb18b3737-profile_image-70x70.png', twitch:'demonicniy_gamer' },
+  { name:'LAVER_stream',     url:'https://www.twitch.tv/laver_stream',     avatar:'https://static-cdn.jtvnw.net/jtv_user_pictures/49b3b2fd-f465-4843-8703-5df5fa593d34-profile_image-70x70.png', twitch:'laver_stream' },
+  { name:'n0_s0und5120',     url:'https://www.twitch.tv/n0_s0und5120',     avatar:'https://static-cdn.jtvnw.net/jtv_user_pictures/5ef20d16-3aa0-472a-954e-285fb7eb0988-profile_image-70x70.jpeg', twitch:'n0_s0und5120' },
+  { name:'mariana_yuko',     url:'https://www.twitch.tv/mariana_yuko',     avatar:'https://static-cdn.jtvnw.net/jtv_user_pictures/b2d8f48f-08a4-4b6a-8797-9d9fa1f466ae-profile_image-70x70.jpeg', twitch:'mariana_yuko' },
+  { name:'ukrainian_npc',    url:'https://www.twitch.tv/ukrainian_npc',    avatar:'https://static-cdn.jtvnw.net/jtv_user_pictures/d1f42b50-4493-4096-9f66-2dc015a0ae77-profile_image-70x70.png',  twitch:'ukrainian_npc' },
 ];
 
-// ════════════════════════════════════════════════
-//  ДВИЖОК — не чіпай нижче
-// ════════════════════════════════════════════════
 (function () {
   const VISIBLE = 3, GAP = 14;
   const track    = document.getElementById('carouselTrack');
   const viewport = document.getElementById('carouselViewport');
   const dotsEl   = document.getElementById('carouselDots');
-  const total = STREAMERS.length;
-  let current = 0;
+  const total    = STREAMERS.length;
+  let current    = 0;
 
   function initials(n) { return n.slice(0,2).toUpperCase(); }
   function hue(n) { return [...n].reduce((a,c)=>a+c.charCodeAt(0),0)%360; }
@@ -387,26 +481,14 @@ const STREAMERS = [
     card.className = 'sc-card';
     card.dataset.idx = idx;
 
-    const avContent = s.avatar
-      ? `<img src="${s.avatar}" alt="${s.name}" loading="lazy">`
-      : initials(s.name);
-    const avBg = s.avatar
-      ? ''
-      : `style="background:linear-gradient(135deg,hsl(${hue(s.name)},65%,35%),hsl(${(hue(s.name)+60)%360},55%,22%))"`;
-
-    // Twitch CDN preview — прямий URL (не потребує токена, але лише для онлайн каналів)
+    const avContent = s.avatar ? `<img src="${s.avatar}" alt="${s.name}" loading="lazy">` : initials(s.name);
+    const avBg = s.avatar ? '' : `style="background:linear-gradient(135deg,hsl(${hue(s.name)},65%,35%),hsl(${(hue(s.name)+60)%360},55%,22%))"`;
     const ts = Date.now();
-    const previewUrl = s.twitch
-      ? `https://static-cdn.jtvnw.net/previews-ttv/live_user_${s.twitch.toLowerCase()}-320x180.jpg?_=${ts}`
-      : null;
+    const previewUrl = s.twitch ? `https://static-cdn.jtvnw.net/previews-ttv/live_user_${s.twitch.toLowerCase()}-320x180.jpg?_=${ts}` : null;
 
     card.innerHTML = `
       <div class="sc-thumb">
-        ${previewUrl ? `
-          <img class="sc-preview" id="prev-${idx}"
-            src="${previewUrl}"
-            alt="preview"
-          >` : ''}
+        ${previewUrl ? `<img class="sc-preview" id="prev-${idx}" src="${previewUrl}" alt="preview">` : ''}
         <div class="sc-thumb-offline" id="offline-${idx}">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="#9146FF"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
           <span>OFFLINE</span>
@@ -428,109 +510,71 @@ const STREAMERS = [
     card.addEventListener('click', () => window.open(s.url, '_blank'));
     track.appendChild(card);
 
-    // Перевіряємо онлайн-статус через завантаження превью
     if (previewUrl) {
       const img = document.getElementById(`prev-${idx}`);
       const offlineEl = document.getElementById(`offline-${idx}`);
       const liveBadge = document.getElementById(`live-${idx}`);
-
-      img.onload = function() {
-        // Twitch повертає 404 якщо офлайн
-        // Якщо onload — значить онлайн, ховаємо offline overlay
-        offlineEl.style.display = 'none';
-        liveBadge.classList.remove('hidden');
-      };
-      img.onerror = function() {
-        // 404 = офлайн — ховаємо зображення, показуємо offline overlay
-        img.style.display = 'none';
-        offlineEl.style.display = 'flex';
-      };
+      img.onload  = () => { offlineEl.style.display='none'; liveBadge.classList.remove('hidden'); };
+      img.onerror = () => { img.style.display='none'; offlineEl.style.display='flex'; };
     }
   });
 
-  // Клонуємо картки для безкінечного циклу: [клони кінця] [оригінали] [клони початку]
-  const clonesBefore = VISIBLE; // скільки клонів спереду
-  const clonesAfter  = VISIBLE; // скільки клонів ззаду
+  const clonesBefore = VISIBLE, clonesAfter = VISIBLE;
 
   function buildClones() {
     const cards = Array.from(track.querySelectorAll('.sc-card'));
-    // клони з кінця — вставляємо на початок
     for (let i = total - clonesBefore; i < total; i++) {
-      const clone = cards[i].cloneNode(true);
-      clone.classList.add('sc-clone');
-      track.insertBefore(clone, track.firstChild);
+      const c = cards[i].cloneNode(true); c.classList.add('sc-clone');
+      track.insertBefore(c, track.firstChild);
     }
-    // клони з початку — додаємо в кінець
     for (let i = 0; i < clonesAfter; i++) {
-      const clone = cards[i].cloneNode(true);
-      clone.classList.add('sc-clone');
-      track.appendChild(clone);
+      const c = cards[i].cloneNode(true); c.classList.add('sc-clone');
+      track.appendChild(c);
     }
   }
 
-  function cardStep() {
-    return (viewport.clientWidth - GAP * (VISIBLE - 1)) / VISIBLE + GAP;
-  }
+  function cardStep() { return (viewport.clientWidth - GAP*(VISIBLE-1))/VISIBLE + GAP; }
   function setWidths() {
-    const w = (viewport.clientWidth - GAP * (VISIBLE - 1)) / VISIBLE;
-    track.querySelectorAll('.sc-card').forEach(c => { c.style.width = w + 'px'; });
+    const w = (viewport.clientWidth - GAP*(VISIBLE-1))/VISIBLE;
+    track.querySelectorAll('.sc-card').forEach(c => { c.style.width = w+'px'; });
   }
 
-  let isTransitioning = false;
-
-  function goTo(idx, animate = true) {
+  function goTo(idx, animate=true) {
     current = idx;
     const offset = (clonesBefore + current) * cardStep();
-    if (!animate) {
-      track.style.transition = 'none';
-    } else {
-      track.style.transition = 'transform .38s cubic-bezier(.4,0,.2,1)';
-    }
+    track.style.transition = animate ? 'transform .38s cubic-bezier(.4,0,.2,1)' : 'none';
     track.style.transform = `translateX(-${offset}px)`;
     renderDots();
   }
 
-  // Після анімації — тихо перестрибуємо якщо вийшли за межі
   track.addEventListener('transitionend', () => {
-    if (current < 0) {
-      goTo(current + total, false);
-    } else if (current >= total) {
-      goTo(current - total, false);
-    }
-    isTransitioning = false;
+    if (current < 0)      goTo(current + total, false);
+    else if (current >= total) goTo(current - total, false);
   });
 
   function renderDots() {
     dotsEl.innerHTML = '';
-    const n = Math.ceil(total / VISIBLE);
-    const active = Math.floor(((current % total) + total) % total / VISIBLE) % n;
-    for (let i = 0; i < n; i++) {
-      const d = document.createElement('div');
-      d.className = 'cdot' + (i === active ? ' active' : '');
-      d.addEventListener('click', () => goTo(i * VISIBLE));
+    const n = Math.ceil(total/VISIBLE);
+    const active = Math.floor(((current%total)+total)%total/VISIBLE)%n;
+    for (let i=0;i<n;i++){
+      const d=document.createElement('div');
+      d.className='cdot'+(i===active?' active':'');
+      d.addEventListener('click',()=>goTo(i*VISIBLE));
       dotsEl.appendChild(d);
     }
   }
 
-  document.getElementById('btnPrev').addEventListener('click', () => { goTo(current - 1); });
-  document.getElementById('btnNext').addEventListener('click', () => { goTo(current + 1); });
+  document.getElementById('btnPrev').addEventListener('click', ()=>goTo(current-1));
+  document.getElementById('btnNext').addEventListener('click', ()=>goTo(current+1));
 
-  let tx = 0;
-  viewport.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
-  viewport.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - tx;
-    if (Math.abs(dx) > 40) goTo(current + (dx < 0 ? 1 : -1));
-  }, { passive: true });
+  let tx=0;
+  viewport.addEventListener('touchstart', e=>{tx=e.touches[0].clientX;},{passive:true});
+  viewport.addEventListener('touchend',   e=>{const dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>40)goTo(current+(dx<0?1:-1));},{passive:true});
 
   let rt;
-  window.addEventListener('resize', () => {
-    clearTimeout(rt);
-    rt = setTimeout(() => { setWidths(); goTo(current, false); }, 80);
-  });
+  window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{setWidths();goTo(current,false);},80);});
 
-  buildClones();
-  setWidths();
-  goTo(0, false);
+  buildClones(); setWidths(); goTo(0, false);
 })();
 </script>
 
@@ -538,15 +582,9 @@ const STREAMERS = [
   const _burger = document.getElementById('burger');
   const _mobileMenu = document.getElementById('mobileMenu');
   if (_burger && _mobileMenu) {
-    _burger.addEventListener('click', () => {
-      _burger.classList.toggle('open');
-      _mobileMenu.classList.toggle('open');
-    });
+    _burger.addEventListener('click', () => { _burger.classList.toggle('open'); _mobileMenu.classList.toggle('open'); });
     _mobileMenu.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', () => {
-        _burger.classList.remove('open');
-        _mobileMenu.classList.remove('open');
-      });
+      a.addEventListener('click', () => { _burger.classList.remove('open'); _mobileMenu.classList.remove('open'); });
     });
   }
 </script>

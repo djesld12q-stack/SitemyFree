@@ -1,0 +1,107 @@
+
+# ═══════════════════════════════════════════════════════════════
+#  Twitch Live → OneSignal Push Notifier
+#  Файл: .github/workflows/twitch-notify.yml
+#
+#  Потрібні секрети у Settings → Secrets → Actions:
+#    TWITCH_CLIENT_ID       — з dev.twitch.tv
+#    TWITCH_CLIENT_SECRET   — з dev.twitch.tv
+#    ONESIGNAL_APP_ID       — з OneSignal Dashboard
+#    ONESIGNAL_REST_API_KEY — з OneSignal Dashboard → Keys & IDs
+# ═══════════════════════════════════════════════════════════════
+name: 🔴 Twitch Live Notifier
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # кожні 5 хвилин
+  workflow_dispatch:          # ручний запуск для тестування
+
+permissions:
+  contents: write
+
+jobs:
+  check-live:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔍 Check Twitch & Send Notification
+        env:
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+          ONESIGNAL_APP_ID: ${{ secrets.ONESIGNAL_APP_ID }}
+          ONESIGNAL_REST_API_KEY: ${{ secrets.ONESIGNAL_REST_API_KEY }}
+          CHANNEL: sun69wukong
+        run: |
+          echo "── Отримую Twitch токен ──"
+          TOKEN_RESP=$(curl -sf -X POST \
+            "https://id.twitch.tv/oauth2/token?client_id=${TWITCH_CLIENT_ID}&client_secret=${TWITCH_CLIENT_SECRET}&grant_type=client_credentials")
+          TOKEN=$(echo "$TOKEN_RESP" | jq -r '.access_token')
+
+          if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
+            echo "❌ Не вдалося отримати Twitch токен"
+            exit 1
+          fi
+
+          echo "── Перевіряю стрім ──"
+          STREAM_RESP=$(curl -sf \
+            -H "Client-ID: ${TWITCH_CLIENT_ID}" \
+            -H "Authorization: Bearer ${TOKEN}" \
+            "https://api.twitch.tv/helix/streams?user_login=${CHANNEL}")
+
+          IS_LIVE=$(echo "$STREAM_RESP" | jq '.data | length')
+          echo "IS_LIVE=$IS_LIVE"
+
+          # Читаємо попередній стан (файл .stream_state у репо)
+          PREV_STATE=$(cat .stream_state 2>/dev/null || echo "offline")
+          echo "PREV_STATE=$PREV_STATE"
+
+          if [ "$IS_LIVE" -gt "0" ] && [ "$PREV_STATE" = "offline" ]; then
+            echo "🔴 Стрім ПОЧАВСЯ — надсилаю сповіщення!"
+
+            GAME=$(echo "$STREAM_RESP" | jq -r '.data[0].game_name // "гру"')
+            TITLE=$(echo "$STREAM_RESP" | jq -r '.data[0].title // "Стрім розпочато!"')
+            VIEWERS=$(echo "$STREAM_RESP" | jq -r '.data[0].viewer_count // 0')
+
+            # Обрізаємо назву якщо задовга
+            SHORT_TITLE=$(echo "$TITLE" | cut -c1-80)
+
+            curl -sf -X POST "https://onesignal.com/api/v1/notifications" \
+              -H "Authorization: Basic ${ONESIGNAL_REST_API_KEY}" \
+              -H "Content-Type: application/json" \
+              -d "{
+                \"app_id\": \"${ONESIGNAL_APP_ID}\",
+                \"included_segments\": [\"All\"],
+                \"headings\": {\"uk\": \"🔴 sun69wukong стримить!\", \"en\": \"🔴 sun69wukong is LIVE!\"},
+                \"contents\": {\"uk\": \"${SHORT_TITLE} — ${GAME}\", \"en\": \"${SHORT_TITLE} — ${GAME}\"},
+                \"url\": \"https://www.twitch.tv/sun69wukong\",
+                \"chrome_web_icon\": \"https://static-cdn.jtvnw.net/jtv_user_pictures/1061c666-078b-4160-861f-a3c919383f2e-profile_image-70x70.png\",
+                \"chrome_web_badge\": \"https://static-cdn.jtvnw.net/jtv_user_pictures/1061c666-078b-4160-861f-a3c919383f2e-profile_image-70x70.png\",
+                \"web_push_topic\": \"stream-live\",
+                \"ttl\": 3600
+              }" && echo "✅ Сповіщення надіслано!" || echo "⚠️ Помилка надсилання"
+
+            echo "live" > .stream_state
+
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git config user.name  "GitHub Actions"
+            git add .stream_state
+            git diff --cached --quiet || git commit -m "chore: stream went live [skip ci]"
+            git push
+
+          elif [ "$IS_LIVE" -eq "0" ] && [ "$PREV_STATE" = "live" ]; then
+            echo "⚫ Стрім закінчився — оновлюю стан"
+            echo "offline" > .stream_state
+
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git config user.name  "GitHub Actions"
+            git add .stream_state
+            git diff --cached --quiet || git commit -m "chore: stream went offline [skip ci]"
+            git push
+
+          else
+            echo "ℹ️ Зміни статусу немає (поточний: $PREV_STATE, IS_LIVE: $IS_LIVE)"
+          fi
