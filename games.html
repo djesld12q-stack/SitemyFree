@@ -216,6 +216,95 @@
       .mobile-menu { gap:20px; }
     }
 
+    /* ══════════ ADMIN EDIT MODE ══════════ */
+    .admin-edit-btn {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      background: rgba(255,165,0,.15); border: 1px solid rgba(255,165,0,.4);
+      color: #ffa500; padding: 4px 10px; border-radius: 3px; cursor: pointer;
+      transition: color .2s, border-color .2s;
+    }
+    .admin-edit-btn:hover { color: #ffb84d; border-color: rgba(255,165,0,.6); }
+
+    /* ── EDIT MODAL ── */
+    .edit-modal-backdrop {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(7,7,15,.92); backdrop-filter: blur(8px);
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .edit-modal-backdrop.open { display: flex; }
+
+    .edit-modal {
+      background: #0e0e20; border: 1px solid var(--border); border-radius: 14px;
+      width: 100%; max-width: 580px;
+      transform: translateY(20px) scale(.97); transition: transform .25s;
+      max-height: 92vh; overflow-y: auto;
+    }
+    .edit-modal-backdrop.open .edit-modal { transform: translateY(0) scale(1); }
+
+    .edit-modal-header {
+      padding: 20px 24px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .edit-modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--text); }
+    .edit-modal-close {
+      background: none; border: 1px solid var(--border); border-radius: 4px;
+      color: var(--muted); cursor: pointer; padding: 4px 8px; font-size: 16px;
+      transition: border-color .15s, color .15s;
+    }
+    .edit-modal-close:hover { border-color: var(--accent); color: var(--accent); }
+
+    .edit-modal-body { padding: 20px 24px; }
+
+    .edit-form-group {
+      margin-bottom: 18px;
+    }
+    .edit-form-label {
+      display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      letter-spacing: 2px; color: var(--muted); margin-bottom: 6px;
+    }
+    .edit-form-input, .edit-form-select, .edit-form-textarea {
+      width: 100%; padding: 10px 12px; background: rgba(255,255,255,.03); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); font-family: 'Rajdhani', sans-serif; font-size: 14px;
+      transition: border-color .15s;
+    }
+    .edit-form-textarea { resize: vertical; min-height: 80px; }
+    .edit-form-input:focus, .edit-form-select:focus, .edit-form-textarea:focus {
+      outline: none; border-color: var(--accent);
+    }
+
+    .edit-form-actions {
+      display: flex; gap: 10px; margin-top: 24px;
+    }
+    .edit-form-btn {
+      flex: 1; padding: 10px; font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      letter-spacing: 2px; border: 1px solid var(--border); border-radius: 6px;
+      cursor: pointer; transition: border-color .15s, color .15s;
+    }
+    .edit-form-btn-save { background: rgba(0,200,100,.15); color: var(--green); border-color: rgba(0,200,100,.35); }
+    .edit-form-btn-save:hover { border-color: rgba(0,200,100,.6); }
+    .edit-form-btn-cancel { background: transparent; color: var(--muted); }
+    .edit-form-btn-cancel:hover { border-color: var(--accent); color: var(--accent); }
+    .edit-form-btn-delete { background: rgba(255,70,85,.08); color: var(--red); border-color: rgba(255,70,85,.35); }
+    .edit-form-btn-delete:hover { border-color: rgba(255,70,85,.6); }
+
+    .edit-games-list {
+      display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;
+    }
+    .edit-game-item {
+      padding: 12px 14px; background: rgba(255,255,255,.02); border: 1px solid var(--border);
+      border-radius: 6px; display: flex; align-items: center; justify-content: space-between;
+      transition: border-color .15s, background .15s;
+    }
+    .edit-game-item:hover { border-color: var(--accent); background: rgba(145,70,255,.05); }
+    .edit-game-item-info { flex: 1; }
+    .edit-game-item-name { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 1px; color: var(--text); }
+    .edit-game-item-actions { display: flex; gap: 6px; }
+    .edit-game-item-btn {
+      background: none; border: 1px solid var(--border); color: var(--muted); cursor: pointer;
+      padding: 4px 8px; font-size: 12px; border-radius: 3px; transition: border-color .15s, color .15s;
+    }
+    .edit-game-item-btn:hover { border-color: var(--accent); color: var(--accent); }
+
   </style>
 </head>
 <body>
@@ -1022,6 +1111,60 @@
   </div>
 </div>
 
+<!-- ══════════ EDIT MODAL (ADMIN ONLY) ══════════ -->
+<div class="edit-modal-backdrop" id="editModalBackdrop">
+  <div class="edit-modal">
+    <div class="edit-modal-header">
+      <div class="edit-modal-title" id="editModalTitle">ДОДАТИ ГРУ</div>
+      <button class="edit-modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="edit-modal-body">
+      <form id="editGameForm">
+        <div class="edit-form-group">
+          <label class="edit-form-label">// НАЗВА ГРИ</label>
+          <input type="text" class="edit-form-input" id="editGameTitle" placeholder="Введіть назву гри" required>
+        </div>
+
+        <div class="edit-form-group">
+          <label class="edit-form-label">// URL КАРТИНКИ</label>
+          <input type="text" class="edit-form-input" id="editGameImg" placeholder="https://...">
+        </div>
+
+        <div class="edit-form-group">
+          <label class="edit-form-label">// КАТЕГОРІЯ</label>
+          <select class="edit-form-select" id="editGameCategory">
+            <option value="playing">▶ ГРАЮ ЗАРАЗ</option>
+            <option value="done">✓ ПРОЙДЕНО</option>
+            <option value="dropped">✗ ЗАКИНУТО</option>
+            <option value="planned">⏳ ЗАПЛАНОВАНІ</option>
+          </select>
+        </div>
+
+        <div class="edit-form-group">
+          <label class="edit-form-label">// ОЦІНКА (1-10)</label>
+          <input type="number" class="edit-form-input" id="editGameRating" min="1" max="10" step="0.5" placeholder="Наприклад: 8.5">
+        </div>
+
+        <div class="edit-form-group">
+          <label class="edit-form-label">// ВІДГУК</label>
+          <textarea class="edit-form-textarea" id="editGameReview" placeholder="Напишіть свій відгук про гру..."></textarea>
+        </div>
+
+        <div class="edit-form-actions">
+          <button type="submit" class="edit-form-btn edit-form-btn-save">✓ ЗБЕРЕГТИ</button>
+          <button type="button" class="edit-form-btn edit-form-btn-cancel" onclick="closeEditModal()">СКАСУВАТИ</button>
+          <button type="button" class="edit-form-btn edit-form-btn-delete" id="editGameDelete" style="display: none;">✗ ВИДАЛИТИ</button>
+        </div>
+      </form>
+
+      <div id="editGamesList" style="margin-top: 40px; display: none;">
+        <div class="edit-form-label">// ВСІ ГРИ НИЖЧЕ (НАТИСНІТЬ ДЛЯ РЕДАГУВАННЯ)</div>
+        <div class="edit-games-list" id="gamesListContainer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════ MODAL (READ-ONLY) ══════════ -->
 <div class="modal-backdrop" id="reviewModal">
   <div class="modal">
@@ -1048,54 +1191,86 @@
 <footer>❤️ © 24.04.2026 <strong>sun69wukong</strong> ❤️</footer>
 
 <script>
-  document.querySelectorAll('.game-card').forEach(card => {
-    card.addEventListener('click', () => {
-      const title  = card.dataset.title;
-      const img    = card.dataset.img;
-      const rating = card.dataset.rating;
-      const review = card.dataset.review;
+  // ════════ HELPER FUNCTIONS ════════
+  function createGameCard(title, img, rating, review, category) {
+    const card = document.createElement('div');
+    card.className = 'game-card' + (category === 'dropped' ? ' dropped' : '');
+    card.dataset.title = title;
+    card.dataset.img = img;
+    card.dataset.rating = rating;
+    card.dataset.review = review;
 
-      document.getElementById('modalTitle').textContent = title;
-      document.getElementById('modalCover').src = img;
-      document.getElementById('modalCover').alt = title;
+    const badges = {
+      'playing': { badge: '▶ ГРАЮ', overlay: 'playing-overlay', hint: '👁 ПОДИВИТИСЬ' },
+      'done': { badge: '✓ ПРОЙДЕНО', overlay: '', hint: '★ ПЕРЕГЛЯНУТИ ВІДГУК' },
+      'dropped': { badge: '✗ ЗАКИНУТО', overlay: 'dropped-overlay', hint: '✗ ПЕРЕГЛЯНУТИ' },
+      'planned': { badge: '⏳ планах пограти', overlay: 'planned-overlay', hint: '👁 ПОДИВИТИСЬ' }
+    };
 
-      const ratingRow   = document.getElementById('modalRatingRow');
-      const scoreEl     = document.getElementById('modalScore');
-      const scoreFill   = document.getElementById('modalScoreFill');
-      const reviewLabel = document.getElementById('modalReviewLabel');
-      const reviewText  = document.getElementById('modalReviewText');
-      const noReview    = document.getElementById('modalNoReview');
+    const b = badges[category] || badges['playing'];
+    const ratingChip = rating && category === 'done' ? `<div class="card-rating-chip">★ ${rating}/10</div>` : '';
 
-      /* rating bar */
-      if (rating) {
-        ratingRow.style.display = 'flex';
-        scoreEl.textContent = rating;
-        setTimeout(() => { scoreFill.style.width = (parseInt(rating) * 10) + '%'; }, 60);
-      } else {
-        ratingRow.style.display = 'none';
-        scoreFill.style.width = '0%';
-      }
+    card.innerHTML = `
+      <img src="${img}" alt="${title}">
+      <div class="card-hover-hint">${b.hint}</div>
+      <div class="game-card-overlay ${b.overlay}">${b.badge}</div>
+      ${ratingChip}
+      <div class="game-card-body">
+        <div class="game-card-title">${title}</div>
+        <div class="game-card-meta">
+          <span class="game-badge ${category}">${b.badge}</span>
+          <span class="game-platform">🎮</span>
+        </div>
+      </div>
+    `;
 
-      /* review text */
-      if (review) {
-        reviewLabel.textContent    = '// МІЙ ВІДГУК';
-        reviewLabel.style.display  = 'block';
-        reviewText.textContent     = review;
-        reviewText.style.display   = 'block';
-        noReview.style.display     = 'none';
-      } else {
-        reviewLabel.style.display  = 'none';
-        reviewText.style.display   = 'none';
-        noReview.style.display     = 'block';
-        noReview.textContent       = rating
-          ? '// відгук ще не написано'
-          : '// відгук і оцінка ще не додані';
-      }
+    return card;
+  }
 
-      document.getElementById('reviewModal').classList.add('open');
-      document.body.style.overflow = 'hidden';
-    });
-  });
+  function handleGameCardClick(card) {
+    const title  = card.dataset.title;
+    const img    = card.dataset.img;
+    const rating = card.dataset.rating;
+    const review = card.dataset.review;
+
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalCover').src = img;
+    document.getElementById('modalCover').alt = title;
+
+    const ratingRow   = document.getElementById('modalRatingRow');
+    const scoreEl     = document.getElementById('modalScore');
+    const scoreFill   = document.getElementById('modalScoreFill');
+    const reviewLabel = document.getElementById('modalReviewLabel');
+    const reviewText  = document.getElementById('modalReviewText');
+    const noReview    = document.getElementById('modalNoReview');
+
+    if (rating) {
+      ratingRow.style.display = 'flex';
+      scoreEl.textContent = rating;
+      setTimeout(() => { scoreFill.style.width = (parseInt(rating) * 10) + '%'; }, 60);
+    } else {
+      ratingRow.style.display = 'none';
+      scoreFill.style.width = '0%';
+    }
+
+    if (review) {
+      reviewLabel.textContent    = '// МІЙ ВІДГУК';
+      reviewLabel.style.display  = 'block';
+      reviewText.textContent     = review;
+      reviewText.style.display   = 'block';
+      noReview.style.display     = 'none';
+    } else {
+      reviewLabel.style.display  = 'none';
+      reviewText.style.display   = 'none';
+      noReview.style.display     = 'block';
+      noReview.textContent       = rating
+        ? '// відгук ще не написано'
+        : '// відгук і оцінка ще не додані';
+    }
+
+    document.getElementById('reviewModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
 
   function closeModal() {
     document.getElementById('reviewModal').classList.remove('open');
@@ -1103,10 +1278,51 @@
     document.getElementById('modalScoreFill').style.width = '0%';
   }
 
+  // ════════ GAME CARDS EVENT LISTENERS ════════
+  document.querySelectorAll('.game-card').forEach(card => {
+    card.addEventListener('click', () => handleGameCardClick(card));
+  });
+
   document.getElementById('reviewModal').addEventListener('click', e => {
     if (e.target === document.getElementById('reviewModal')) closeModal();
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // ════════ LOAD CUSTOM GAMES ════════
+  function loadCustomGames() {
+    const saved = localStorage.getItem('sunwukong_games');
+    if (!saved) return;
+
+    try {
+      const games = JSON.parse(saved);
+      games.forEach(game => {
+        const grids = document.querySelectorAll('.games-grid');
+        const categoryIndex = {
+          'playing': 0,
+          'done': 1,
+          'dropped': 2,
+          'planned': 3
+        }[game.category] || 0;
+
+        const grid = grids[categoryIndex];
+        if (grid) {
+          const newCard = createGameCard(game.title, game.img, game.rating, game.review, game.category);
+          grid.appendChild(newCard);
+          newCard.addEventListener('click', function() {
+            handleGameCardClick(this);
+          });
+        }
+      });
+    } catch (e) {
+      console.error('Помилка при завантаженні ігор:', e);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadCustomGames);
+  } else {
+    loadCustomGames();
+  }
 </script>
 
 <script>
@@ -1127,5 +1343,190 @@
 </script>
 
 <script src="editor.js?v=1"></script>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- ADMIN GAME EDITOR — тільки для sun69wukong -->
+<!-- ════════════════════════════════════════════════════════ -->
+<script>
+// ── Ініціалізація адмін редактора ──
+function initGameEditor() {
+  const isOwner = TwitchAuth && TwitchAuth.isOwner && TwitchAuth.isOwner();
+  const isDebugMode = new URL(window.location).searchParams.get('debug') === '1';
+  
+  if (!isOwner && !isDebugMode) return;
+
+  // Додаємо кнопку редагування в навбар
+  const inject = () => {
+    const nav = document.querySelector('.nav-links');
+    if (!nav) return;
+
+    const btn = document.createElement('button');
+    btn.className = 'admin-edit-btn';
+    btn.textContent = isDebugMode ? '⚙ РЕДАГУВАТИ (DEBUG)' : '⚙ РЕДАГУВАТИ ІГРИ';
+    btn.onclick = () => openEditModal(-1, 'done');
+    nav.appendChild(btn);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', inject);
+  } else {
+    inject();
+  }
+}
+
+// Глобальна змінна для редактування
+let editingGameIndex = -1;
+let editingCategory = null;
+
+function openEditModal(gameIndex = -1, category = 'done') {
+  editingGameIndex = gameIndex;
+  editingCategory = category;
+
+  const form = document.getElementById('editGameForm');
+  const deleteBtn = document.getElementById('editGameDelete');
+  const modalTitle = document.getElementById('editModalTitle');
+
+  if (gameIndex === -1) {
+    // Додавання нової гри
+    modalTitle.textContent = 'ДОДАТИ НОВУ ГРУ';
+    form.reset();
+    deleteBtn.style.display = 'none';
+  } else {
+    // Редагування існуючої гри
+    const grids = document.querySelectorAll('.games-grid');
+    const categoryIndex = {'playing': 0, 'done': 1, 'dropped': 2, 'planned': 3}[category] || 0;
+    const grid = grids[categoryIndex];
+    const cards = grid ? grid.querySelectorAll('.game-card') : [];
+    const card = cards[gameIndex];
+
+    if (!card) return;
+
+    modalTitle.textContent = 'РЕДАГУВАТИ ГРУ';
+    document.getElementById('editGameTitle').value = card.dataset.title || '';
+    document.getElementById('editGameImg').value = card.dataset.img || '';
+    document.getElementById('editGameRating').value = card.dataset.rating || '';
+    document.getElementById('editGameReview').value = card.dataset.review || '';
+    document.getElementById('editGameCategory').value = category || 'playing';
+
+    deleteBtn.style.display = 'block';
+    deleteBtn.onclick = deleteGame;
+  }
+
+  document.getElementById('editModalBackdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEditModal() {
+  document.getElementById('editModalBackdrop').classList.remove('open');
+  document.body.style.overflow = '';
+  editingGameIndex = -1;
+  editingCategory = null;
+}
+
+function deleteGame() {
+  if (editingGameIndex === -1 || !editingCategory) return;
+  if (!confirm('Ви впевнені, що хочете видалити цю гру?')) return;
+
+  const categoryIndex = {'playing': 0, 'done': 1, 'dropped': 2, 'planned': 3}[editingCategory] || 0;
+  const grids = document.querySelectorAll('.games-grid');
+  const grid = grids[categoryIndex];
+
+  if (!grid) return;
+
+  const cards = grid.querySelectorAll('.game-card');
+  if (editingGameIndex < cards.length) {
+    cards[editingGameIndex].remove();
+  }
+
+  closeEditModal();
+  saveGamesToStorage();
+}
+
+document.getElementById('editGameForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const title = document.getElementById('editGameTitle').value.trim();
+  const img = document.getElementById('editGameImg').value.trim();
+  const rating = document.getElementById('editGameRating').value.trim();
+  const review = document.getElementById('editGameReview').value.trim();
+  const category = document.getElementById('editGameCategory').value;
+
+  if (!title) {
+    alert('Будь ласка, введіть назву гри!');
+    return;
+  }
+
+  const categoryIndex = {'playing': 0, 'done': 1, 'dropped': 2, 'planned': 3}[category] || 0;
+  const grids = document.querySelectorAll('.games-grid');
+  const grid = grids[categoryIndex];
+
+  if (!grid) {
+    alert('Сітка для цієї категорії не знайдена!');
+    return;
+  }
+
+  if (editingGameIndex === -1) {
+    // Додавання нової гри
+    const newCard = createGameCard(title, img, rating, review, category);
+    newCard.setAttribute('data-custom', '1');
+    grid.appendChild(newCard);
+    newCard.addEventListener('click', function() {
+      handleGameCardClick(this);
+    });
+  } else {
+    // Редагування існуючої гри
+    const cards = grid.querySelectorAll('.game-card');
+    if (editingGameIndex < cards.length) {
+      const card = cards[editingGameIndex];
+      card.dataset.title = title;
+      card.dataset.img = img;
+      card.dataset.rating = rating;
+      card.dataset.review = review;
+
+      const img_el = card.querySelector('img');
+      if (img_el) {
+        img_el.src = img;
+        img_el.alt = title;
+      }
+
+      const title_el = card.querySelector('.game-card-title');
+      if (title_el) title_el.textContent = title;
+    }
+  }
+
+  closeEditModal();
+  saveGamesToStorage();
+  location.reload();
+});
+
+function saveGamesToStorage() {
+  const allCards = [];
+  const categoryNames = ['playing', 'done', 'dropped', 'planned'];
+
+  document.querySelectorAll('.games-grid').forEach((grid, idx) => {
+    grid.querySelectorAll('.game-card[data-custom]').forEach(card => {
+      allCards.push({
+        title: card.dataset.title,
+        img: card.dataset.img,
+        rating: card.dataset.rating,
+        review: card.dataset.review,
+        category: categoryNames[idx] || 'done'
+      });
+    });
+  });
+
+  if (allCards.length > 0) {
+    localStorage.setItem('sunwukong_games', JSON.stringify(allCards));
+  }
+}
+
+// Ініціалізуємо редактор при завантаженні
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initGameEditor);
+} else {
+  initGameEditor();
+}
+</script>
+
 </body>
 </html>
