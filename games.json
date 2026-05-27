@@ -1,0 +1,36 @@
+{
+  "playing": [
+    {
+      "id": 1,
+      "title": "Titan Quest II",
+      "img": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1154030/header.jpg?t=1777285636",
+      "rating": "",
+      "review": ""
+    },
+    {
+      "id": 2,
+      "title": "Rust",
+      "img": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/header.jpg?t=1776257232",
+      "rating": "",
+      "review": ""
+    }
+  ],
+  "done": [
+    {
+      "id": 100,
+      "title": "PRAGMATA",
+      "img": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3357650/e32e168b25ed68a0cf6264c220c07e96c2abfb56/header.jpg?t=1777005719",
+      "rating": "10",
+      "review": "Просто дуже красива гра від якої я навіть просльозився! класна гра!"
+    },
+    {
+      "id": 101,
+      "title": "Darwin's Paradox!",
+      "img": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2989180/header.jpg?t=1775773471",
+      "rating": "8.5",
+      "review": "Гра цікава але ввважка що дай бог . від неї можна згоріти за пару хвилин але доволі швидка і проходима гра чи коштує? її купити?. певно що так але не за фул прайс)"
+    }
+  ],
+  "dropped": [],
+  "planned": []
+}
