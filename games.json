@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "title": "Titan Quest II",
+    "status": "playing",
+    "img": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1154030/header.jpg?t=1777285636",
+    "rating": "",
+    "review": "",
+    "platform": "Steam"
+  },
+  {
+    "id": 2,
+    "title": "Rust",
+    "status": "playing",
+    "img": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/header.jpg?t=1776257232",
+    "rating": "",
+    "review": "",
+    "platform": "Steam"
+  }
+]

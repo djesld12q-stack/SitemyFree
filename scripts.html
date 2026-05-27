@@ -148,6 +148,91 @@
       footer { padding:18px 14px; }
     }
 
+    /* ══════════ ADMIN EDIT ══════════ */
+    .script-card {
+      position: relative;
+    }
+    .script-card-edit-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(255,165,0,.15); border: 1px solid rgba(255,165,0,.4);
+      color: #ffa500; padding: 4px 8px; font-size: 10px; border-radius: 3px;
+      cursor: pointer; transition: all .2s; opacity: 0; pointer-events: none;
+    }
+    .script-card:hover .script-card-edit-btn {
+      opacity: 1; pointer-events: all;
+    }
+    .script-card-edit-btn:hover { background: rgba(255,165,0,.25); border-color: rgba(255,165,0,.6); }
+
+    /* ── EDIT MODAL ── */
+    .edit-modal-backdrop {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(7,7,15,.92); backdrop-filter: blur(8px);
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .edit-modal-backdrop.open { display: flex; }
+
+    .edit-modal {
+      background: #0e0e20; border: 1px solid var(--border); border-radius: 14px;
+      width: 100%; max-width: 580px;
+      transform: translateY(20px) scale(.97); transition: transform .25s;
+      max-height: 92vh; overflow-y: auto;
+    }
+    .edit-modal-backdrop.open .edit-modal { transform: translateY(0) scale(1); }
+
+    .edit-modal-header {
+      padding: 20px 24px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .edit-modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: var(--text); }
+    .edit-modal-close {
+      background: none; border: 1px solid var(--border); border-radius: 4px;
+      color: var(--muted); cursor: pointer; padding: 4px 8px; font-size: 16px;
+      transition: border-color .15s, color .15s;
+    }
+    .edit-modal-close:hover { border-color: var(--accent); color: var(--accent); }
+
+    .edit-modal-body { padding: 20px 24px; }
+
+    .edit-form-group {
+      margin-bottom: 18px;
+    }
+    .edit-form-label {
+      display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      letter-spacing: 2px; color: var(--muted); margin-bottom: 6px;
+    }
+    .edit-form-input, .edit-form-textarea {
+      width: 100%; padding: 10px 12px; background: rgba(255,255,255,.03); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); font-family: 'Rajdhani', sans-serif; font-size: 14px;
+      transition: border-color .15s;
+    }
+    .edit-form-textarea { resize: vertical; min-height: 80px; }
+    .edit-form-input:focus, .edit-form-textarea:focus {
+      outline: none; border-color: var(--accent);
+    }
+
+    .edit-form-actions {
+      display: flex; gap: 10px; margin-top: 24px;
+    }
+    .edit-form-btn {
+      flex: 1; padding: 10px; font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      letter-spacing: 2px; border: 1px solid var(--border); border-radius: 6px;
+      cursor: pointer; transition: border-color .15s, color .15s;
+    }
+    .edit-form-btn-save { background: rgba(0,200,100,.15); color: var(--green); border-color: rgba(0,200,100,.35); }
+    .edit-form-btn-save:hover { border-color: rgba(0,200,100,.6); }
+    .edit-form-btn-cancel { background: transparent; color: var(--muted); }
+    .edit-form-btn-cancel:hover { border-color: var(--accent); color: var(--accent); }
+    .edit-form-btn-delete { background: rgba(255,70,85,.08); color: #ff4655; border-color: rgba(255,70,85,.35); }
+    .edit-form-btn-delete:hover { border-color: rgba(255,70,85,.6); }
+
+    .admin-edit-btn {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      background: rgba(255,165,0,.15); border: 1px solid rgba(255,165,0,.4);
+      color: #ffa500; padding: 8px 14px; border-radius: 4px; cursor: pointer;
+      transition: color .2s, border-color .2s;
+    }
+    .admin-edit-btn:hover { color: #ffb84d; border-color: rgba(255,165,0,.6); }
+
 
     @media(max-width:380px){
       .mobile-menu a { font-size:26px; letter-spacing:2px; }
@@ -158,6 +243,7 @@
 </head>
 <body>
 
+<script src="github-manager.js"></script>
 <script src="twitch-auth.js"></script>
 <script>
   TwitchAuth.addNavAuth();
@@ -200,89 +286,252 @@
 </div>
 
 <div class="page">
-  <p class="section-label">// скрипти</p>
-  <h1 class="section-title">МОЇ СКРИПТИ</h1>
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px;">
+    <div>
+      <p class="section-label">// скрипти</p>
+      <h1 class="section-title">МОЇ СКРИПТИ</h1>
+    </div>
+    <div id="admin-panel" style="display: none;">
+      <button id="add-script-btn" class="admin-edit-btn" style="margin-left: 12px;">+ ДОДАТИ</button>
+    </div>
+  </div>
 
   <div class="scripts-grid" id="scripts-container"></div>
+</div>
+
+<!-- ═══ МОДАЛЬНЕ ВІКНО ДЛЯ РЕДАГУВАННЯ ═══ -->
+<div class="edit-modal-backdrop" id="scriptModal">
+  <div class="edit-modal">
+    <div class="edit-modal-header">
+      <div class="edit-modal-title">Редагування скрипту</div>
+      <button class="edit-modal-close" id="closeScriptModal">✕</button>
+    </div>
+    <div class="edit-modal-body">
+      <form id="scriptForm">
+        <div class="edit-form-group">
+          <label class="edit-form-label">НАЗВА СКРИПТУ</label>
+          <input type="text" id="scriptName" class="edit-form-input" required>
+        </div>
+        <div class="edit-form-group">
+          <label class="edit-form-label">ОПИС</label>
+          <textarea id="scriptDesc" class="edit-form-textarea" placeholder="Коротко опиши що робить скрипт..."></textarea>
+        </div>
+        <div class="edit-form-group">
+          <label class="edit-form-label">URL ЗОБРАЖЕННЯ</label>
+          <input type="url" id="scriptImg" class="edit-form-input" required>
+        </div>
+        <div class="edit-form-group">
+          <label class="edit-form-label">URL ЗАВАНТАЖЕННЯ</label>
+          <input type="url" id="scriptUrl" class="edit-form-input" required>
+        </div>
+        <div class="edit-form-actions">
+          <button type="submit" class="edit-form-btn edit-form-btn-save">ЗБЕРЕГТИ</button>
+          <button type="button" class="edit-form-btn edit-form-btn-cancel" id="cancelScriptEdit">СКАСУВАТИ</button>
+          <button type="button" class="edit-form-btn edit-form-btn-delete" id="deleteScriptBtn" style="display: none;">ВИДАЛИТИ</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
 <footer>❤️ © 24.04.2026 <strong>sun69wukong</strong> ❤️</footer>
 
 <script>
-  // ▼▼▼ ДОДАВАЙ СКРИПТИ ТУТ ▼▼▼
-  const SCRIPTS = [
+  // ▼▼▼ УПРАВЛІННЯ СКРИПТАМИ ▼▼▼
+  
+  let currentScripts = [];
+  let editingScriptId = null;
+  const container = document.getElementById('scripts-container');
+  const adminPanel = document.getElementById('admin-panel');
+  const scriptModal = document.getElementById('scriptModal');
+  const scriptForm = document.getElementById('scriptForm');
+  const closeBtn = document.getElementById('closeScriptModal');
+  const cancelBtn = document.getElementById('cancelScriptEdit');
+  const deleteBtn = document.getElementById('deleteScriptBtn');
+  const addBtn = document.getElementById('add-script-btn');
 
-    {
-      name: "TranslateJoin",
-      desc: "Автоматично перекладає повідомлення при підключенні до чату.",
-      img:  "https://futurenow.com.ua/wp-content/uploads/2020/04/bezkoshtovnyj-perekladach-onlajn.jpg",
-      url:  "https://drive.usercontent.google.com/download?id=1XqMbLJizgidnrT9vkhah6eZ8H-ii2HYg&export=download&authuser=0"
-    },
+  // Завантажити скрипти
+  async function loadScripts() {
+    try {
+      // Спочатку спробуємо завантажити з GitHub
+      const scripts = await GitHubManager.getScripts();
+      if (scripts.length > 0) {
+        currentScripts = scripts;
+      } else {
+        // Якщо на GitHub немає — використовуємо стандартні
+        currentScripts = await getDefaultScripts();
+      }
+    } catch (error) {
+      console.warn('Не вдалось завантажити з GitHub, використовуємо стандартні:', error);
+      currentScripts = await getDefaultScripts();
+    }
+    renderScripts();
+    updateAdminPanel();
+  }
 
-     
-    {
-       name: "Всі алерти в одному",
-     desc: "Дозволяє робити всі алерти в одному скрипті і сповіщувати в обс студіо",
-       img:  "https://media.discordapp.net/attachments/1493233309197799425/1497179922676846672/image.png?ex=69ec94f5&is=69eb4375&hm=a37007b3532d1031fbdf48b701f38310f53fe7dda35b3cbf9c3d061ed4ab8df6&=&format=webp&quality=lossless",
-     url:  "https://drive.usercontent.google.com/download?id=1iF5K7SyknIS-ZERPHGmQcrinrgG2ThcF&export=download&authuser=0"
-    },
+  // Отримати стандартні скрипти
+  async function getDefaultScripts() {
+    return [
+      {
+        name: "TranslateJoin",
+        desc: "Автоматично перекладає повідомлення при підключенні до чату.",
+        img:  "https://futurenow.com.ua/wp-content/uploads/2020/04/bezkoshtovnyj-perekladach-onlajn.jpg",
+        url:  "https://drive.usercontent.google.com/download?id=1XqMbLJizgidnrT9vkhah6eZ8H-ii2HYg&export=download&authuser=0"
+      },
+      {
+        name: "Всі алерти в одному",
+        desc: "Дозволяє робити всі алерти в одному скрипті і сповіщувати в обс студіо",
+        img:  "https://media.discordapp.net/attachments/1493233309197799425/1497179922676846672/image.png?ex=69ec94f5&is=69eb4375&hm=a37007b3532d1031fbdf48b701f38310f53fe7dda35b3cbf9c3d061ed4ab8df6&=&format=webp&quality=lossless",
+        url:  "https://drive.usercontent.google.com/download?id=1iF5K7SyknIS-ZERPHGmQcrinrgG2ThcF&export=download&authuser=0"
+      },
+      {
+        name: "BanMax",
+        desc: "Блокує будь який сайт який вказаний в розширенні.",
+        img:  "https://store-images.s-microsoft.com/image/apps.31757.4afafa17-ff84-41b4-89d5-6315b95b8fe9.8a6f95ce-76a3-4527-a2e4-0523aeb1f22a.aaee099d-a09a-4793-8341-3d12e84362aa?mode=scale&h=100&q=90&w=100",
+        url:  "https://microsoftedge.microsoft.com/addons/detail/banmax/pcmldmdhlebmpggcganlnjmlkkfmdhjn"
+      },
+      {
+        name: "Clip",
+        desc: "Створіть кліп за допомогою Stremerbot лиш вівши !clip name",
+        img:  "https://media.discordapp.net/attachments/1249396967537250446/1497504042287366174/image.png?ex=69edc2d1&is=69ec7151&hm=39e43ace338f36575608b682091316ddd15cb0d8c7f035c7577e6efac5146d95&=&format=webp&quality=lossless",
+        url:  "https://drive.usercontent.google.com/download?id=1MJavd6CrPYooDmwwfQtme6ulDAYfY4xI&export=download&authuser=0&confirm=t&uuid=c9ae5dad-2fdc-4965-a1e0-990a302227d8&at=ALBwUgn9FCM7o0udsR24U25rt533:1777103091017"
+      },
+      {
+        name: "ЗМІНА КАТЕГОРІЇ",
+        desc: "Зміна категорії і зміна сцени і назву стірма за доп AI",
+        img:  "https://media.discordapp.net/attachments/1249396967537250446/1497505083238125598/image.png?ex=69edc3ca&is=69ec724a&hm=bdaded8ab38ac67baa254895c59416c56340043a7c00ec8d0639c0eb1d658840&=&format=webp&quality=lossless",
+        url:  "https://drive.usercontent.google.com/download?id=1egfqGhPjiPnHIUOlgCC6f092e7Kx1KCp&export=download&authuser=0&confirm=t&uuid=4eebe9f2-d7b2-4cb7-85e2-30cb0eb67777&at=ALBwUgkD7SwlemHEzWzDqotrIQwp:1777103327582"
+      },
+    ];
+  }
 
-  {
-     name: "BanMax",
-     desc: "Блокує будь який сайт який вказаний в розширенні.",
-      img:  "https://store-images.s-microsoft.com/image/apps.31757.4afafa17-ff84-41b4-89d5-6315b95b8fe9.8a6f95ce-76a3-4527-a2e4-0523aeb1f22a.aaee099d-a09a-4793-8341-3d12e84362aa?mode=scale&h=100&q=90&w=100",
-       url:  "https://microsoftedge.microsoft.com/addons/detail/banmax/pcmldmdhlebmpggcganlnjmlkkfmdhjn"
-       
-    },
-
-
-     {
-      name: "Clip",
-      desc: "Створіть кліп за допомогою Stremerbot лиш вівши !clip name",
-       img:  "https://media.discordapp.net/attachments/1249396967537250446/1497504042287366174/image.png?ex=69edc2d1&is=69ec7151&hm=39e43ace338f36575608b682091316ddd15cb0d8c7f035c7577e6efac5146d95&=&format=webp&quality=lossless",
-       url:  "https://drive.usercontent.google.com/download?id=1MJavd6CrPYooDmwwfQtme6ulDAYfY4xI&export=download&authuser=0&confirm=t&uuid=c9ae5dad-2fdc-4965-a1e0-990a302227d8&at=ALBwUgn9FCM7o0udsR24U25rt533:1777103091017"
-     },
-
-    {
-       name: "ЗМІНА КАТЕГОРІЇ",
-      desc: "Зміна категорії і зміна сцени і назву стірма за доп AI",
-     img:  "https://media.discordapp.net/attachments/1249396967537250446/1497505083238125598/image.png?ex=69edc3ca&is=69ec724a&hm=bdaded8ab38ac67baa254895c59416c56340043a7c00ec8d0639c0eb1d658840&=&format=webp&quality=lossless",
-       url:  "https://drive.usercontent.google.com/download?id=1egfqGhPjiPnHIUOlgCC6f092e7Kx1KCp&export=download&authuser=0&confirm=t&uuid=4eebe9f2-d7b2-4cb7-85e2-30cb0eb67777&at=ALBwUgkD7SwlemHEzWzDqotrIQwp:1777103327582"
-     },
-
-
-
-      // Приклад з описом:
-    // {
-    //   name: "Назва скрипта",
-    //   desc: "Тут пишеш що робить цей скрипт — коротко і зрозуміло.",
-    //   img:  "https://...",
-    //   url:  "https://drive.usercontent.google.com/download?id=XXXXXXX&export=download&confirm=t"
-    // },
-
-      // Приклад з описом:
-    // {
-    //   name: "Назва скрипта",
-    //   desc: "Тут пишеш що робить цей скрипт — коротко і зрозуміло.",
-    //   img:  "https://...",
-    //   url:  "https://drive.usercontent.google.com/download?id=XXXXXXX&export=download&confirm=t"
-    // },
-
-  ];
-  // ▲▲▲
-
-  document.getElementById('scripts-container').innerHTML = SCRIPTS.map(s => `
-    <div class="script-card">
-      <img src="${s.img}" alt="${s.name}">
-      <div class="script-card-body">
-        <div class="script-card-header">
-          <div class="script-name">${s.name}</div>
+  // Відобразити скрипти
+  function renderScripts() {
+    container.innerHTML = currentScripts.map(s => `
+      <div class="script-card" data-id="${s.id || 0}">
+        <img src="${s.img}" alt="${s.name}">
+        ${TwitchAuth.isOwner() ? `<button class="script-card-edit-btn" onclick="editScript(${s.id || 0})">✏ EDIT</button>` : ''}
+        <div class="script-card-body">
+          <div class="script-card-header">
+            <div class="script-name">${s.name}</div>
+          </div>
+          ${s.desc ? `<p class="script-desc">${s.desc}</p>` : ''}
+          <a class="script-dl" href="${s.url}" target="_blank">↓ ЗАВАНТАЖИТИ</a>
         </div>
-        ${s.desc ? `<p class="script-desc">${s.desc}</p>` : ''}
-        <a class="script-dl" href="${s.url}" target="_blank">↓ ЗАВАНТАЖИТИ</a>
       </div>
-    </div>
-  `).join('');
+    `).join('');
+  }
+
+  // Оновити адмін панель
+  function updateAdminPanel() {
+    if (TwitchAuth.isOwner()) {
+      adminPanel.style.display = 'block';
+    } else {
+      adminPanel.style.display = 'none';
+    }
+  }
+
+  // Редагування скрипту
+  window.editScript = function(id) {
+    editingScriptId = id;
+    const script = id === 0 ? null : currentScripts.find(s => s.id === id);
+    
+    if (script) {
+      document.getElementById('scriptName').value = script.name;
+      document.getElementById('scriptDesc').value = script.desc || '';
+      document.getElementById('scriptImg').value = script.img;
+      document.getElementById('scriptUrl').value = script.url;
+      deleteBtn.style.display = 'block';
+      scriptForm.querySelector('.edit-modal-title') = 'Редагування скрипту';
+    } else {
+      document.getElementById('scriptName').value = '';
+      document.getElementById('scriptDesc').value = '';
+      document.getElementById('scriptImg').value = '';
+      document.getElementById('scriptUrl').value = '';
+      deleteBtn.style.display = 'none';
+      editingScriptId = null;
+    }
+    
+    scriptModal.classList.add('open');
+  };
+
+  // Додати новий скрипт
+  addBtn?.addEventListener('click', () => {
+    editingScriptId = null;
+    document.getElementById('scriptName').value = '';
+    document.getElementById('scriptDesc').value = '';
+    document.getElementById('scriptImg').value = '';
+    document.getElementById('scriptUrl').value = '';
+    deleteBtn.style.display = 'none';
+    scriptModal.classList.add('open');
+  });
+
+  // Закрити модаль
+  closeBtn?.addEventListener('click', () => {
+    scriptModal.classList.remove('open');
+  });
+
+  cancelBtn?.addEventListener('click', () => {
+    scriptModal.classList.remove('open');
+  });
+
+  // Відправка форми
+  scriptForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    if (!GitHubManager.config.token) {
+      alert('GitHub токен не встановлений! Введіть токен для збереження.');
+      return;
+    }
+
+    const scriptData = {
+      name: document.getElementById('scriptName').value,
+      desc: document.getElementById('scriptDesc').value,
+      img: document.getElementById('scriptImg').value,
+      url: document.getElementById('scriptUrl').value,
+    };
+
+    try {
+      if (editingScriptId) {
+        // Оновити існуючий
+        currentScripts = await GitHubManager.updateScript(editingScriptId, scriptData);
+      } else {
+        // Додати новий
+        currentScripts = await GitHubManager.addScript(scriptData);
+      }
+      
+      renderScripts();
+      scriptModal.classList.remove('open');
+      alert('Скрипт збережений!');
+    } catch (error) {
+      alert('Помилка при збереженні: ' + error.message);
+    }
+  });
+
+  // Видалення скрипту
+  deleteBtn?.addEventListener('click', async () => {
+    if (!confirm('Ви впевнені що хочете видалити цей скрипт?')) return;
+
+    try {
+      currentScripts = await GitHubManager.deleteScript(editingScriptId);
+      renderScripts();
+      scriptModal.classList.remove('open');
+      alert('Скрипт видалений!');
+    } catch (error) {
+      alert('Помилка при видаленні: ' + error.message);
+    }
+  });
+
+  // Запитати токен при першому завантаженні
+  if (TwitchAuth.isOwner() && !GitHubManager.config.token) {
+    const token = prompt('Введіть GitHub Personal Access Token:\n(Токен буде збережений локально)');
+    if (token) {
+      GitHubManager.setToken(token);
+    }
+  }
+
+  // Завантажити скрипти при завантаженні сторінки
+  document.addEventListener('DOMContentLoaded', loadScripts);
 </script>
 
 <script>
