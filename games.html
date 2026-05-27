@@ -225,6 +225,21 @@
     }
     .admin-edit-btn:hover { color: #ffb84d; border-color: rgba(255,165,0,.6); }
 
+    .game-card {
+      position: relative;
+    }
+    .game-card-edit-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(255,165,0,.15); border: 1px solid rgba(255,165,0,.4);
+      color: #ffa500; padding: 4px 8px; font-size: 10px; border-radius: 3px;
+      cursor: pointer; transition: all .2s; opacity: 0; pointer-events: none;
+      z-index: 10;
+    }
+    .game-card:hover .game-card-edit-btn {
+      opacity: 1; pointer-events: all;
+    }
+    .game-card-edit-btn:hover { background: rgba(255,165,0,.25); border-color: rgba(255,165,0,.6); }
+
     /* ── EDIT MODAL ── */
     .edit-modal-backdrop {
       position: fixed; inset: 0; z-index: 300;
@@ -309,6 +324,7 @@
 </head>
 <body>
 
+<script src="github-manager.js"></script>
 <script src="twitch-auth.js"></script>
 <script>
   TwitchAuth.addNavAuth();
@@ -371,53 +387,25 @@
 
 
   <!-- ══════════ ГРАЮ ЗАРАЗ ══════════ -->
-  <p class="section-label">// зараз</p>
-  <h1 class="section-title">ГРАЮ ЗАРАЗ</h1>
-  <div class="games-grid" style="margin-bottom: 60px;">
-
-    <div class="game-card"
-         data-title="Titan Quest II"
-         data-img="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1154030/header.jpg?t=1777285636"
-         data-rating=""
-         data-review="">
-      <img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1154030/header.jpg?t=1777285636" alt="Titan Quest II">
-      <div class="card-hover-hint">👁 ПОДИВИТИСЬ</div>
-      <div class="game-card-overlay playing-overlay">▶ ГРАЮ</div>
-      <div class="game-card-body">
-        <div class="game-card-title">Titan Quest II</div>
-        <div class="game-card-meta">
-          <span class="game-badge playing">▶ ГРАЮ</span>
-          <span class="game-platform">🎮 STEAM</span>
-        </div>
-      </div>
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <div>
+      <p class="section-label">// зараз</p>
+      <h1 class="section-title">ГРАЮ ЗАРАЗ</h1>
     </div>
-    
-    <div class="game-card"
-         data-title="Titan Quest II"
-         data-img="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/header.jpg?t=1776257232"
-         data-rating=""
-         data-review="">
-      <img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/252490/header.jpg?t=1776257232" alt="Rust">
-      <div class="card-hover-hint">👁 ПОДИВИТИСЬ</div>
-      <div class="game-card-overlay playing-overlay">▶ ГРАЮ</div>
-      <div class="game-card-body">
-        <div class="game-card-title">Rust</div>
-        <div class="game-card-meta">
-          <span class="game-badge playing">▶ ГРАЮ</span>
-          <span class="game-platform">🎮 STEAM</span>
-        </div>
-      </div>
+    <div id="admin-panel" style="display: none;">
+      <button id="add-game-btn" class="admin-edit-btn" style="margin-left: 12px;">+ ДОДАТИ</button>
     </div>
-
-    
   </div>
+  <div class="games-grid" id="playing-games" style="margin-bottom: 60px;">
+
+  <div id="playing-games"></div>
 
   <div class="section-divider"></div>
 
   <!-- ══════════ ПРОЙДЕНІ ІГРИ ══════════ -->
   <p class="section-label">// steam</p>
   <h2 class="section-title">ПРОЙДЕНІ ІГРИ</h2>
-  <div class="games-grid" style="margin-bottom: 60px;">
+  <div class="games-grid" id="completed-games" style="margin-bottom: 60px;">
 
     <div class="game-card"
          data-title="PRAGMATA"
@@ -1152,7 +1140,7 @@
 
         <div class="edit-form-actions">
           <button type="submit" class="edit-form-btn edit-form-btn-save">✓ ЗБЕРЕГТИ</button>
-          <button type="button" class="edit-form-btn edit-form-btn-cancel" onclick="closeEditModal()">СКАСУВАТИ</button>
+          <button type="button" class="edit-form-btn edit-form-btn-cancel" id="cancelGameEdit">СКАСУВАТИ</button>
           <button type="button" class="edit-form-btn edit-form-btn-delete" id="editGameDelete" style="display: none;">✗ ВИДАЛИТИ</button>
         </div>
       </form>
@@ -1288,42 +1276,314 @@
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-  // ════════ LOAD CUSTOM GAMES ════════
-  function loadCustomGames() {
-    const saved = localStorage.getItem('sunwukong_games');
-    if (!saved) return;
+<script src="github-manager.js"></script>
+<script>
+// ════════════════════════════════════════════════════════
+// УПРАВЛІННЯ ІГРАМИ З GITHUB
+// ════════════════════════════════════════════════════════
 
-    try {
-      const games = JSON.parse(saved);
-      games.forEach(game => {
-        const grids = document.querySelectorAll('.games-grid');
-        const categoryIndex = {
-          'playing': 0,
-          'done': 1,
-          'dropped': 2,
-          'planned': 3
-        }[game.category] || 0;
+let allGames = { playing: [], done: [], dropped: [], planned: [] };
 
-        const grid = grids[categoryIndex];
-        if (grid) {
-          const newCard = createGameCard(game.title, game.img, game.rating, game.review, game.category);
-          grid.appendChild(newCard);
-          newCard.addEventListener('click', function() {
-            handleGameCardClick(this);
-          });
-        }
-      });
-    } catch (e) {
-      console.error('Помилка при завантаженні ігор:', e);
+// Функція для створення HTML карточки гри
+function createGameCardHTML(game, category) {
+  const badges = {
+    'playing': { badge: '▶ ГРАЮ', overlay: 'playing-overlay', hint: '👁 ПОДИВИТИСЬ' },
+    'done': { badge: '✓ ПРОЙДЕНО', overlay: '', hint: '★ ПЕРЕГЛЯНУТИ ВІДГУК' },
+    'dropped': { badge: '✗ ЗАКИНУТО', overlay: 'dropped-overlay', hint: '✗ ПЕРЕГЛЯНУТИ' },
+    'planned': { badge: '⏳ планах пограти', overlay: 'planned-overlay', hint: '👁 ПОДИВИТИСЬ' }
+  };
+
+  const b = badges[category] || badges['playing'];
+  const ratingChip = game.rating && category === 'done' ? `<div class="card-rating-chip">★ ${game.rating}/10</div>` : '';
+  const classDropped = category === 'dropped' ? 'dropped' : '';
+  const adminBtn = TwitchAuth.isOwner?.() ? `<button class="game-card-edit-btn" onclick="editGame(${game.id}, '${category}'); return false;">✏ EDIT</button>` : '';
+
+  return `
+    <div class="game-card ${classDropped}" data-title="${game.title}" data-img="${game.img}" data-rating="${game.rating}" data-review="${game.review}">
+      <img src="${game.img}" alt="${game.title}">
+      <div class="card-hover-hint">${b.hint}</div>
+      ${adminBtn}
+      <div class="game-card-overlay ${b.overlay}">${b.badge}</div>
+      ${ratingChip}
+      <div class="game-card-body">
+        <div class="game-card-title">${game.title}</div>
+        <div class="game-card-meta">
+          <span class="game-badge ${category}">${b.badge}</span>
+          <span class="game-platform">🎮</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Завантажити ігри з GitHub
+async function loadGames() {
+  try {
+    allGames = await GitHubManager.getGames();
+  } catch (error) {
+    console.warn('Помилка завантаження ігор з GitHub:', error);
+    allGames = { playing: [], done: [], dropped: [], planned: [] };
+  }
+  renderGames();
+  setupAdminPanel();
+}
+
+// Відобразити всі ігри
+function renderGames() {
+  const containers = {
+    'playing': document.getElementById('playing-games'),
+    'done': document.getElementById('completed-games'),
+  };
+
+  // Граю зараз
+  if (containers.playing) {
+    containers.playing.innerHTML = (allGames.playing || [])
+      .map(game => createGameCardHTML(game, 'playing'))
+      .join('');
+    attachGameCardListeners('playing');
+  }
+
+  // Пройдені
+  if (containers.done) {
+    containers.done.innerHTML = (allGames.done || [])
+      .map(game => createGameCardHTML(game, 'done'))
+      .join('');
+    attachGameCardListeners('done');
+  }
+
+  // Якщо є закинуті - додамо їх
+  const droppedContainer = document.querySelector('[style*="margin-bottom: 60px"]');
+  if (droppedContainer && (allGames.dropped || []).length > 0) {
+    const droppedHTML = (allGames.dropped || [])
+      .map(game => createGameCardHTML(game, 'dropped'))
+      .join('');
+    // Знайдемо контейнер для закинутих після divider
+    const sections = document.querySelectorAll('h2.section-title');
+    const droppedSection = sections[1]; // "ЗАКИНУТІ ІГРИ"
+    if (droppedSection) {
+      const grid = droppedSection.closest('.page').querySelector('.games-grid:nth-of-type(2)');
+      if (grid) {
+        grid.innerHTML = droppedHTML;
+        attachGameCardListeners('dropped');
+      }
     }
   }
+}
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadCustomGames);
+// Прикріпити слухачі до карточок
+function attachGameCardListeners(category) {
+  document.querySelectorAll(`.game-card`).forEach(card => {
+    card.addEventListener('click', function(e) {
+      if (e.target.classList.contains('script-card-edit-btn')) return;
+      handleGameCardClick(this);
+    });
+  });
+}
+
+// Обробник клику на карточку (модалка з відгуком)
+function handleGameCardClick(card) {
+  const title  = card.dataset.title;
+  const img    = card.dataset.img;
+  const rating = card.dataset.rating;
+  const review = card.dataset.review;
+
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalCover').src = img;
+  document.getElementById('modalCover').alt = title;
+
+  const ratingRow   = document.getElementById('modalRatingRow');
+  const scoreEl     = document.getElementById('modalScore');
+  const scoreFill   = document.getElementById('modalScoreFill');
+  const reviewLabel = document.getElementById('modalReviewLabel');
+  const reviewText  = document.getElementById('modalReviewText');
+  const noReview    = document.getElementById('modalNoReview');
+
+  if (rating) {
+    ratingRow.style.display = 'flex';
+    scoreEl.textContent = rating;
+    setTimeout(() => { scoreFill.style.width = (parseFloat(rating) * 10) + '%'; }, 60);
   } else {
-    loadCustomGames();
+    ratingRow.style.display = 'none';
+    scoreFill.style.width = '0%';
   }
-</script>
+
+  if (review) {
+    reviewLabel.textContent    = '// МІЙ ВІДГУК';
+    reviewLabel.style.display  = 'block';
+    reviewText.textContent     = review;
+    reviewText.style.display   = 'block';
+    noReview.style.display     = 'none';
+  } else {
+    reviewLabel.style.display  = 'none';
+    reviewText.style.display   = 'none';
+    noReview.style.display     = 'block';
+    noReview.textContent       = rating
+      ? '// відгук ще не написано'
+      : '// відгук і оцінка ще не додані';
+  }
+
+  document.getElementById('reviewModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('reviewModal').classList.remove('open');
+  document.body.style.overflow = '';
+  document.getElementById('modalScoreFill').style.width = '0%';
+}
+
+// ════════════════════════════════════════════════════════
+// ADMIN PANEL
+// ════════════════════════════════════════════════════════
+
+let editingGameId = null;
+let editingCategory = null;
+
+function setupAdminPanel() {
+  const adminPanel = document.getElementById('admin-panel');
+  const addBtn = document.getElementById('add-game-btn');
+
+  if (TwitchAuth.isOwner?.()) {
+    adminPanel.style.display = 'block';
+    if (addBtn) {
+      addBtn.onclick = () => {
+        editingGameId = null;
+        editingCategory = 'done';
+        openGameModal();
+      };
+    }
+  } else {
+    adminPanel.style.display = 'none';
+  }
+}
+
+function openGameModal() {
+  const modal = document.getElementById('editModalBackdrop');
+  const form = document.getElementById('editGameForm');
+  const title = document.getElementById('editModalTitle');
+  const deleteBtn = document.getElementById('editGameDelete');
+  const closeBtn = document.querySelector('.edit-modal-close');
+
+  if (editingGameId) {
+    // Редагування
+    title.textContent = 'РЕДАГУВАТИ ГРУ';
+    const game = findGameById(editingGameId);
+    
+    if (game) {
+      document.getElementById('editGameTitle').value = game.title;
+      document.getElementById('editGameImg').value = game.img;
+      document.getElementById('editGameRating').value = game.rating || '';
+      document.getElementById('editGameReview').value = game.review || '';
+      document.getElementById('editGameCategory').value = editingCategory;
+      deleteBtn.style.display = 'block';
+    }
+  } else {
+    // Додавання
+    title.textContent = 'ДОДАТИ НОВУ ГРУ';
+    form.reset();
+    document.getElementById('editGameCategory').value = 'done';
+    deleteBtn.style.display = 'none';
+  }
+
+  modal.classList.add('open');
+}
+
+function closeGameModal() {
+  document.getElementById('editModalBackdrop').classList.remove('open');
+  editingGameId = null;
+  editingCategory = null;
+}
+
+function findGameById(id) {
+  for (const category in allGames) {
+    const game = allGames[category].find(g => g.id === id);
+    if (game) return { ...game, category };
+  }
+  return null;
+}
+
+function editGame(id, category) {
+  editingGameId = id;
+  editingCategory = category;
+  openGameModal();
+}
+
+async function handleGameFormSubmit(e) {
+  e.preventDefault();
+
+  if (!GitHubManager.config.token) {
+    alert('GitHub токен не встановлений!');
+    return;
+  }
+
+  const category = document.getElementById('editGameCategory').value;
+  const gameData = {
+    title: document.getElementById('editGameTitle').value,
+    img: document.getElementById('editGameImg').value,
+    rating: document.getElementById('editGameRating').value || '',
+    review: document.getElementById('editGameReview').value || '',
+  };
+
+  try {
+    if (editingGameId) {
+      // Оновити
+      allGames = await GitHubManager.updateGame(editingGameId, editingCategory, gameData);
+      alert('Гру оновлено! Оновлення видно всім!');
+    } else {
+      // Додати
+      allGames = await GitHubManager.addGame(gameData, category);
+      alert('Гру додано! Вона видна всім на сайті!');
+    }
+    
+    renderGames();
+    closeGameModal();
+  } catch (error) {
+    alert('Помилка: ' + error.message);
+  }
+}
+
+async function handleGameDelete() {
+  if (!confirm('Видалити цю гру?')) return;
+
+  try {
+    allGames = await GitHubManager.deleteGame(editingGameId, editingCategory);
+    alert('Гру видалено!');
+    renderGames();
+    closeGameModal();
+  } catch (error) {
+    alert('Помилка: ' + error.message);
+  }
+}
+
+// Прикріпити обробники до форми
+document.getElementById('editGameForm')?.addEventListener('submit', handleGameFormSubmit);
+document.getElementById('editGameDelete')?.addEventListener('click', handleGameDelete);
+document.getElementById('cancelGameEdit')?.addEventListener('click', closeGameModal);
+document.querySelector('.edit-modal-close')?.addEventListener('click', closeGameModal);
+
+// Modal закриття
+document.getElementById('reviewModal')?.addEventListener('click', e => {
+  if (e.target === document.getElementById('reviewModal')) closeModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// Запитати токен якщо у власника
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    if (TwitchAuth.isOwner?.() && !GitHubManager.config.token) {
+      const token = prompt('Введіть GitHub Personal Access Token для управління іграми:\n(Токен буде збережений локально)');
+      if (token) {
+        GitHubManager.setToken(token);
+      }
+    }
+  }, 500);
+});
+
+// Завантажити ігри при загрузці сторінки
+document.addEventListener('DOMContentLoaded', loadGames);
+if (document.readyState === 'interactive' || document.readyState === 'complete') {
+  loadGames();
+}</script>
 
 <script>
   const _burger = document.getElementById('burger');

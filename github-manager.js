@@ -8,7 +8,7 @@ const GitHubManager = {
   config: {
     owner: 'djesld12q-stack',        // GitHub username
     repo: 'sunwukong',                // Репозиторій
-    token: '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',                        // Токен буде встановлений динамічно
+    token: '',                        // Токен буде встановлений динамічно
     branch: 'main',
   },
 
@@ -194,12 +194,12 @@ const GitHubManager = {
 
   async getGames() {
     const file = await this.readFile('games.json');
-    if (!file) return [];
+    if (!file) return { playing: [], done: [], dropped: [], planned: [] };
     try {
       return JSON.parse(file.content);
     } catch (e) {
       console.error('Помилка парсингу games.json:', e);
-      return [];
+      return { playing: [], done: [], dropped: [], planned: [] };
     }
   },
 
@@ -212,6 +212,50 @@ const GitHubManager = {
       message,
       sha
     );
+  },
+
+  async addGame(game, category = 'done') {
+    const games = await this.getGames();
+    
+    if (!games[category]) {
+      games[category] = [];
+    }
+    
+    const newGame = {
+      id: Date.now(),
+      ...game,
+    };
+    
+    games[category].push(newGame);
+    await this.saveGames(games, `Додано нову гру: ${game.title}`);
+    return games;
+  },
+
+  async updateGame(id, category, updates) {
+    const games = await this.getGames();
+    
+    if (!games[category]) return games;
+    
+    const index = games[category].findIndex(g => g.id === id);
+    if (index === -1) throw new Error('Гра не знайдена');
+    
+    games[category][index] = { ...games[category][index], ...updates };
+    await this.saveGames(games, `Оновлено гру: ${games[category][index].title}`);
+    return games;
+  },
+
+  async deleteGame(id, category) {
+    const games = await this.getGames();
+    
+    if (!games[category]) return games;
+    
+    const index = games[category].findIndex(g => g.id === id);
+    if (index === -1) throw new Error('Гра не знайдена');
+    
+    const gameName = games[category][index].title;
+    games[category].splice(index, 1);
+    await this.saveGames(games, `Видалено гру: ${gameName}`);
+    return games;
   },
 };
 
